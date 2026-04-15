@@ -85,7 +85,7 @@ The following properties **MUST** appear as specified. Additional properties **M
 
 | Property | Requirement |
 |----------|---------------|
-| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1` |
+| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` |
 | `type` | **MUST** include `VerifiableCredential` and `I2H2A` |
 | `issuer` | **MUST** be a string **DID** identifying the human holder (any DID method) |
 | `validFrom` | **MUST** be an ISO 8601 datetime (maps to JWT `nbf` claim) |
@@ -121,7 +121,7 @@ The `credentialStatus` object **MUST** contain:
 
 #### 2.5 JSON-LD context (normative fragment)
 
-The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
+The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
 
 ```json
 {
@@ -188,7 +188,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
   "vc": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://ultraquamfy.github.io/I2H2A-spec/contexts/v1"
+      "https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld"
     ],
     "type": ["VerifiableCredential", "I2H2A"],
     "credentialSubject": {
