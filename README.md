@@ -2,7 +2,7 @@
 
 **A W3C Verifiable Credential type for cryptographic human-to-agent delegation**
 
-The normative specification is [I2H2A-v1.0.md](./I2H2A-v1.0.md).
+The normative specification is [I2H2A-v0.1.md](https://github.com/UltraQuamfy/I2H2A-spec/blob/main/I2H2A-v0.1.md).
 
 ---
 

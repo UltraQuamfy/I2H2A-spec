@@ -2,7 +2,7 @@
 
 ## Issuer to Holder to Agent Delegation Credential
 
-**Version:** 1.0  
+**Version:** 0.1
 **Status:** Draft  
 **Date:** 2026-04-12
 
@@ -85,11 +85,11 @@ The following properties **MUST** appear as specified. Additional properties **M
 
 | Property | Requirement |
 |----------|---------------|
-| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://i2h2a.org/contexts/v1` |
+| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1` |
 | `type` | **MUST** include `VerifiableCredential` and `I2H2A` |
 | `issuer` | **MUST** be a string **DID** identifying the human holder (any DID method) |
-| `issuanceDate` | **MUST** be an ISO 8601 datetime |
-| `expirationDate` | **MUST** be an ISO 8601 datetime strictly after `issuanceDate` |
+| `validFrom` | **MUST** be an ISO 8601 datetime (maps to JWT `nbf` claim) |
+| `validUntil` | **MUST** be an ISO 8601 datetime strictly after `validFrom` (maps to JWT `exp` claim) |
 | `credentialSubject` | **MUST** be an object conforming to Section 2.3 |
 | `credentialStatus` | **MUST** be an object conforming to Section 2.4 |
 
@@ -121,7 +121,7 @@ The `credentialStatus` object **MUST** contain:
 
 #### 2.5 JSON-LD context (normative fragment)
 
-The resource at `https://i2h2a.org/contexts/v1` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
+The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
 
 ```json
 {
@@ -140,6 +140,8 @@ The resource at `https://i2h2a.org/contexts/v1` **SHOULD** define terms used by 
   }
 }
 ```
+
+> **Note:** The context document is hosted at the GitHub Pages URL above. The domain `i2h2a.org` is reserved for a future stable home; implementers SHOULD use the GitHub Pages URL until further notice.
 
 #### 2.6 JWT-VC encoding (VC secured with JWT)
 
@@ -186,7 +188,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
   "vc": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://i2h2a.org/contexts/v1"
+      "https://ultraquamfy.github.io/I2H2A-spec/contexts/v1"
     ],
     "type": ["VerifiableCredential", "I2H2A"],
     "credentialSubject": {
@@ -297,7 +299,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6aW9uOkVpRGVtb0lvbkhvbGRlciI
 
 4. **Resolve DIDs.** The verifier **MUST** resolve `A` and `C.issuer` (and any DIDs required by the securing mechanism) and obtain authorized verification key material per DID Core.
 
-5. **Check temporal validity.** Let `now` be the verifier’s current time. The verifier **MUST** ensure `issuanceDate ≤ now ≤ expirationDate` (with clock skew policy as a local parameter). If not, return `valid = false`, error `credential_expired` or `credential_not_yet_valid`.
+5. **Check temporal validity.** Let `now` be the verifier’s current time. The verifier **MUST** ensure `validFrom ≤ now ≤ validUntil` (with clock skew policy as a local parameter). If not, return `valid = false`, error `credential_expired` or `credential_not_yet_valid`.
 
 6. **Check status.** The verifier **MUST** evaluate `C.credentialStatus` using Appendix A. If revoked/suspended per policy, return `valid = false`, error `credential_revoked`.
 
@@ -325,7 +327,7 @@ function verifyI2H2A(VP, requestContext) -> (valid: bool, errors: string[])
   if !didResolvable(C.credentialSubject.id) or !didResolvable(C.issuer) then
     return (false, ["did_resolution_failed"])
 
-  if !withinValidityWindow(C.issuanceDate, C.expirationDate, now()) then
+  if !withinValidityWindow(C.validFrom, C.validUntil, now()) then
     return (false, ["credential_time_invalid"])
 
   if !statusListSaysActive(C.credentialStatus) then
