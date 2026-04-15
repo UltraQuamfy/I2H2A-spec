@@ -1,25 +1,26 @@
-# I2H2A — Issuer to Holder to Agent Delegation Credential
+# I2H2A — Issuer → Holder → Agent Delegation Credential
 
 **A W3C Verifiable Credential type for cryptographic human-to-agent delegation**
 
-I2H2A defines a standard credential type so a human holder can cryptographically delegate authority to an autonomous agent (e.g. for MCP servers) without platform lock-in. It fills the gap between “user consented in a UI” and “verifier can prove delegation, scope, and revocation” using interoperable W3C Verifiable Credentials. Implementers who issue or verify delegated agent access—wallet vendors, identity providers, MCP hosts, and standards bodies—should adopt it to enable a common verification and interoperability story across ecosystems.
+The normative specification is [I2H2A-v1.0.md](./I2H2A-v1.0.md).
 
-The normative specification is **[I2H2A-v1.0.md](./I2H2A-v1.0.md)**.
+---
 
-## Examples
+## The Problem
 
-See `examples/` directory for complete I2H2A credential samples:
+AI agents act on behalf of humans — booking, searching, executing — but verifiers have no standard way to confirm an agent was actually authorised by a real human, for a specific task, with the ability to revoke that authority at any time.
 
-- [H2A with did:cheqd](examples/h2a-cheqd-example.json) — On-chain anchored holder DID
-- [H2A with did:web](examples/h2a-didweb-example.json) — Web-hosted holder DID
-- [H2A with did:key](examples/h2a-didkey-example.json) — Ephemeral holder and agent DIDs
+OAuth was built for humans authorising apps. It was never designed for agents delegating across system boundaries without a human in the loop. I2H2A fills that gap.
 
-Each example shows the full JWT-VC structure with decoded header and payload.
+---
 
-## License
+## The Three Roles
 
-This repository is licensed under the [MIT License](./LICENSE).
+**ISSUER = the platform**
+The platform verifies the human's identity (via KYC, OID4VP presentation, or equivalent) and issues an I2H2A credential anchored to a public trust registry. The spec is silent on which verification method — that is a platform implementation decision.
 
-## Contributing
+**HOLDER = the human user**
+The human receives the I2H2A credential, reviews the delegation scope, and consents. The human's DID is ledger-anchored (e.g. `did:cheqd`, `did:web`). Government wallets or commercial wallets are single-use for onboarding only — the platform credential is what the agent holds.
 
-This is an open specification. Submit issues or PRs to propose changes.
+**AGENT = an ephemeral session**
+The agent holds the I2H2A credential and its own ephemeral `did:key` private key. It constructs and signs a Verifiable Presentation autonomously and presents it to MCP servers or other verifiers. No round-trip to the issuer required.
