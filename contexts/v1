@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab#I2H2A",
+    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegatedBy",
+    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab#parentCredential",
+    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegationDepth",
+    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab#scope",
+    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab#mcpServers",
+    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab#taskType",
+    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab#constraints",
+    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab#authorization"
+  }
+}

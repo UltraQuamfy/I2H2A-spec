@@ -1,4 +1,4 @@
-# I2H2A Specification v1.0
+# I2H2A Specification v0.1
 
 ## Issuer to Holder to Agent Delegation Credential
 
@@ -128,15 +128,15 @@ The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1` **SHOULD*
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "I2H2A": "https://i2h2a.org/vocab#I2H2A",
-    "delegatedBy": "https://i2h2a.org/vocab#delegatedBy",
-    "parentCredential": "https://i2h2a.org/vocab#parentCredential",
-    "delegationDepth": "https://i2h2a.org/vocab#delegationDepth",
-    "scope": "https://i2h2a.org/vocab#scope",
-    "mcpServers": "https://i2h2a.org/vocab#mcpServers",
-    "taskType": "https://i2h2a.org/vocab#taskType",
-    "constraints": "https://i2h2a.org/vocab#constraints",
-    "authorization": "https://i2h2a.org/vocab#authorization"
+    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab#I2H2A",
+    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegatedBy",
+    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab#parentCredential",
+    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegationDepth",
+    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab#scope",
+    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab#mcpServers",
+    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab#taskType",
+    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab#constraints",
+    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab#authorization"
   }
 }
 ```
@@ -409,7 +409,7 @@ sequenceDiagram
 
 #### 6.5 Issuer compromise
 
-- If the holder’s keys are compromised, an attacker **MAY** mint new delegations. Mitigations include short `expirationDate`, monitoring, DID rotation, and organizational policy.
+- If the holder’s keys are compromised, an attacker **MAY** mint new delegations. Mitigations include short `validUntil`, monitoring, DID rotation, and organizational policy.
 
 ---
 
@@ -517,4 +517,4 @@ function statusListSaysActive(S) -> bool
 
 ---
 
-*End of I2H2A Specification v1.0*
+*End of I2H2A Specification v0.1*
