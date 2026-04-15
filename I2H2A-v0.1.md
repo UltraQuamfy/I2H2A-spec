@@ -128,15 +128,15 @@ The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` **
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab#I2H2A",
-    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegatedBy",
-    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab#parentCredential",
-    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab#delegationDepth",
-    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab#scope",
-    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab#mcpServers",
-    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab#taskType",
-    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab#constraints",
-    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab#authorization"
+    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#I2H2A",
+    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegatedBy",
+    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#parentCredential",
+    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegationDepth",
+    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#scope",
+    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#mcpServers",
+    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#taskType",
+    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#constraints",
+    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#authorization"
   }
 }
 ```
