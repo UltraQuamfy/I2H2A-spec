@@ -18,6 +18,36 @@ The key innovation is operational: the **holder issues** the I2H2A credential to
 
 ---
 
+### Conceptual Overview: The Three Roles
+
+I2H2A defines a trust chain between three distinct roles. Understanding these roles is essential before reading the normative sections.
+
+**ISSUER — the platform**
+The issuer is the platform or service that verifies the human's identity and issues the I2H2A credential. The platform acts as the trust anchor: it vouches that a real, verified human has consented to delegate authority to an agent. How the platform verifies human identity — KYC, OID4VP presentation of an existing credential, government wallet, or other mechanism — is a platform implementation decision. The I2H2A spec is silent on this. What the spec requires is that the issuer holds a DID, signs the I2H2A credential with that DID, and anchors revocation via a status list.
+
+**HOLDER — the human user**
+The human user is the delegating party. They receive the I2H2A credential after the platform verifies their identity, review the delegation scope, and consent to agent execution. The human's DID is typically ledger-anchored (e.g. did:cheqd, did:web) for long-term resolvability. The human does not need to be online after delegation — the credential carries the proof of their consent.
+
+**AGENT — an ephemeral session**
+The agent is an autonomous software process acting on behalf of the human. It holds the I2H2A credential and controls its own ephemeral did:key private key generated per session. The agent constructs and signs a Verifiable Presentation autonomously and presents it to verifiers (e.g. MCP servers). No round-trip to the issuer or holder is required at presentation time. The agent's did:key is intentionally ephemeral — scoped to a single session and discarded after use.
+
+**The trust chain**
+
+    Issuer (Platform DID)
+        |  issues and signs I2H2A credential
+        v
+    Human Holder (ledger-anchored DID)
+        |  delegates scope to agent
+        v
+    Agent (ephemeral did:key)
+        |  constructs and signs VP
+        v
+    Verifier (MCP server, API, policy enforcement point)
+
+The full chain is cryptographically walkable from verifier back to the issuer's trust registry without requiring any platform-specific infrastructure. Any conformant verifier can walk the chain independently.
+
+---
+
 ### 1. Terminology
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals, as normative requirements in this document.
