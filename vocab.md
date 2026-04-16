@@ -1,6 +1,6 @@
 # I2H2A Vocabulary
 
-**URI:** https://ultraquamfy.github.io/I2H2A-spec/vocab  
+**URI:** https://ultraquamfy.github.io/I2H2A-spec/vocab.md  
 **Status:** Draft  
 **Version:** 0.1
 
