@@ -45,7 +45,7 @@ See `examples/` for complete SD-JWT VC samples:
 
 ## JSON-LD context
 
-Live context: `https://i2h2a.org/contexts/v1`
+Live context: `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld`
 
 Source: [contexts/v1.jsonld](./contexts/v1.jsonld)
 
