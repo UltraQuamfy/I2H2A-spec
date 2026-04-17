@@ -10,7 +10,7 @@ Implementers who issue or verify delegated agent access — wallet vendors, iden
 
 The normative specification is **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** — SD-JWT VC, ES256/P-256, field visibility map.
 
-Previous version: [I2H2A-v0.1.md](./I2H2A-v0.1.md) — superseded. JWT-VC, EdDSA/Ed25519. Retained for reference only.
+Previous version: [I2H2A-v0.1.md](./I2H2A-v0.1.md) — superseded. SD-JWT VC, ES256/P-256. Retained for reference only.
 
 ## Format
 

@@ -115,7 +115,7 @@ The `credentialStatus` object **MUST** contain:
 | Property | Requirement |
 |----------|---------------|
 | `id` | **MUST** be a URI identifying the status entry or list entry resource |
-| `type` | **MUST** identify the status mechanism (e.g., `StatusList2021Entry`, `BitstringStatusListEntry`) |
+| `type` | **MUST** identify the status mechanism (e.g., `BitstringStatusListEntry`, `BitstringStatusListEntry`) |
 | `statusListIndex` | **MUST** be a non-negative integer index into the status list |
 | `statusListCredential` | **MUST** be a URI that resolves to the status list credential or list resource |
 
@@ -143,7 +143,7 @@ The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` **
 }
 ```
 
-> **Note:** The context document is hosted at the GitHub Pages URL above. The domain `i2h2a.org` is reserved for a future stable home; implementers SHOULD use the GitHub Pages URL until further notice.
+> **Note:** The context document is hosted at the GitHub Pages URL above. The domain `https://ultraquamfy.github.io/I2H2A-spec` is reserved for a future stable home; implementers SHOULD use the GitHub Pages URL until further notice.
 
 #### 2.6 JWT-VC encoding (VC secured with JWT)
 
@@ -206,7 +206,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
     },
     "credentialStatus": {
       "id": "https://status.list/entry/cheqd-1",
-      "type": "StatusList2021Entry",
+      "type": "BitstringStatusListEntry",
       "statusListIndex": 42,
       "statusListCredential": "https://example.org/status-lists/cheqd-list-1"
     }

@@ -16,15 +16,15 @@
 
 | # | Change | Section(s) affected |
 |---|--------|-------------------|
-| 1 | Credential format changed from JWT-VC to SD-JWT VC (RFC 9901) | 2.6, 3, 4 |
-| 2 | Signing algorithm changed from EdDSA/Ed25519 to ES256/P-256 throughout | 2.6, 3, 9.1 |
+| 1 | Credential format changed from SD-JWT VC to SD-JWT VC (RFC 9901) | 2.6, 3, 4 |
+| 2 | Signing algorithm changed from ES256/P-256 to ES256/P-256 throughout | 2.6, 3, 9.1 |
 | 3 | Field visibility map added as normative section | 2.7 (new) |
 | 4 | `vct` claim replaces `type` array in SD-JWT context | 2.2, 2.3 |
 | 5 | `cnf.jwk` (P-256 public key) added to credential schema | 2.3 |
 | 6 | `_sd` and `_sd_alg` fields added to credential schema | 2.3 |
 | 7 | VP mechanics updated for SD-JWT Key Binding (KB-JWT) presentation | 4, 5.2 |
 | 8 | Verification algorithm updated for SD-JWT+KB | 4 |
-| 9 | DID document example updated from Ed25519VerificationKey2020 to JsonWebKey2020 (P-256) | 9.1 |
+| 9 | DID document example updated from JsonWebKey2020 to JsonWebKey2020 (P-256) | 9.1 |
 | 10 | Normative references updated: added RFC 9901, SD-JWT VC draft, RFC 7518; removed RFC 8032 | 10 |
 
 ---
@@ -564,7 +564,7 @@ cheqd testnet `credentialStatus` policy always returns false regardless of actua
 **Informative:**
 
 - W3C Status List 2021
-- RFC 8032: Edwards-Curve Digital Signature Algorithm (EdDSA) — superseded in this spec by ES256
+- RFC 8032: ES256 — superseded in this spec by ES256
 - Mastercard Verifiable Intent specification (verifiableintent.dev)
 - cheqd Trust Registry documentation
 
