@@ -1,26 +1,68 @@
-# I2H2A — Issuer → Holder → Agent Delegation Credential
+# I2H2A — Issuer to Holder to Agent Delegation Credential
 
-**A W3C Verifiable Credential type for cryptographic human-to-agent delegation**
+**A W3C-aligned SD-JWT VC credential type for cryptographic human-to-agent delegation**
 
-The normative specification is [I2H2A-v0.1.md](https://github.com/UltraQuamfy/I2H2A-spec/blob/main/I2H2A-v0.1.md).
+I2H2A defines a standard credential type so a verified human holder can cryptographically delegate authority to an autonomous agent (e.g. for MCP servers) without platform lock-in. It fills the gap between "user consented in a UI" and "verifier can prove delegation, scope, and revocation" using SD-JWT VC (RFC 9901), ES256/P-256 signatures, and on-chain Bitstring Status List revocation.
 
----
+Implementers who issue or verify delegated agent access — wallet vendors, identity providers, MCP server operators, and standards bodies — should adopt it to enable a common verification and interoperability story across ecosystems.
 
-## The Problem
+## Current version
 
-AI agents act on behalf of humans — booking, searching, executing — but verifiers have no standard way to confirm an agent was actually authorised by a real human, for a specific task, with the ability to revoke that authority at any time.
+The normative specification is **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** — SD-JWT VC, ES256/P-256, field visibility map.
 
-OAuth was built for humans authorising apps. It was never designed for agents delegating across system boundaries without a human in the loop. I2H2A fills that gap.
+Previous version: [I2H2A-v0.1.md](./I2H2A-v0.1.md) — superseded. JWT-VC, EdDSA/Ed25519. Retained for reference only.
 
----
+## Format
 
-## The Three Roles
+I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-256** signatures throughout. Selective disclosure allows verifiers to receive only the minimum claims required — delegation scope, task type, delegated-by — without exposing the full authorization payload.
 
-**ISSUER = the platform**
-The platform verifies the human's identity (via KYC, OID4VP presentation, or equivalent) and issues an I2H2A credential anchored to a public trust registry. The spec is silent on which verification method — that is a platform implementation decision.
+## Key properties
 
-**HOLDER = the human user**
-The human receives the I2H2A credential, reviews the delegation scope, and consents. The human's DID is ledger-anchored (e.g. `did:cheqd`, `did:web`). Government wallets or commercial wallets are single-use for onboarding only — the platform credential is what the agent holds.
+- **Format:** SD-JWT VC (RFC 9901)
+- **Algorithm:** ES256 / P-256
+- **Issuer DID:** `did:cheqd` with `JsonWebKey2020` verification method
+- **Agent DID:** `did:key` (P-256, session-scoped)
+- **Holder binding:** KB-JWT signed by agent P-256 key (`cnf.jwk`)
+- **Revocation:** Bitstring Status List anchored on cheqd
+- **VP mechanics:** SD-JWT+KB presented at MCP session initiation via OID4VP
 
-**AGENT = an ephemeral session**
-The agent holds the I2H2A credential and its own ephemeral `did:key` private key. It constructs and signs a Verifiable Presentation autonomously and presents it to MCP servers or other verifiers. No round-trip to the issuer required.
+## Chain models
+
+- **H2A** — Issuer → Holder → Agent → Verifier. Terminal delegation (`delegationDepth: 0`). Current V1 scope.
+- **H2A2A** — Issuer → Holder → ParentAgent → ChildAgent → Verifier. Defined in spec, not implemented in V1.
+
+## Root-of-trust invariant
+
+Every credential in every chain MUST trace back to a verified human `delegatedBy` DID. Child agent credentials MUST be issuer-signed, never parent-agent-signed.
+
+## Examples
+
+See `examples/` for complete SD-JWT VC samples:
+
+- [H2A with did:cheqd](./examples/h2a-cheqd-example.json) — on-chain anchored holder DID, P-256
+- [H2A with did:key](./examples/h2a-didkey-example.json) — ephemeral holder and agent DIDs
+- [H2A with did:web](./examples/h2a-didweb-example.json) — web-hosted holder DID
+
+## JSON-LD context
+
+Live context: `https://i2h2a.org/contexts/v1`
+
+Source: [contexts/v1.jsonld](./contexts/v1.jsonld)
+
+## Vocabulary
+
+[vocab.md](./vocab.md)
+
+## Middleware
+
+Reference implementation of SD-JWT+KB verification middleware for MCP servers:
+
+[UltraQuamfy/I2H2A-middleware](https://github.com/UltraQuamfy/I2H2A-middleware)
+
+```
+npm install @i2h2a/mcp-middleware
+```
+
+## License
+
+MIT

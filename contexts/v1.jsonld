@@ -2,14 +2,20 @@
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#I2H2A",
-    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegatedBy",
-    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#parentCredential",
-    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegationDepth",
-    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#scope",
-    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#mcpServers",
-    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#taskType",
-    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#constraints",
-    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#authorization"
+    "I2H2A": "https://i2h2a.org/vocab#I2H2A",
+    "HumanIdentityCredential": "https://i2h2a.org/vocab#HumanIdentityCredential",
+    "delegatedBy": "https://i2h2a.org/vocab#delegatedBy",
+    "parentCredential": "https://i2h2a.org/vocab#parentCredential",
+    "delegationDepth": "https://i2h2a.org/vocab#delegationDepth",
+    "scope": "https://i2h2a.org/vocab#scope",
+    "mcpServers": "https://i2h2a.org/vocab#mcpServers",
+    "taskType": "https://i2h2a.org/vocab#taskType",
+    "constraints": "https://i2h2a.org/vocab#constraints",
+    "authorization": "https://i2h2a.org/vocab#authorization",
+    "kycAssuranceLevel": "https://i2h2a.org/vocab#kycAssuranceLevel",
+    "kycProvider": "https://i2h2a.org/vocab#kycProvider",
+    "biometricBindingRef": "https://i2h2a.org/vocab#biometricBindingRef",
+    "documentTypeVerified": "https://i2h2a.org/vocab#documentTypeVerified",
+    "documentIssuingCountry": "https://i2h2a.org/vocab#documentIssuingCountry"
   }
 }

@@ -6,6 +6,8 @@
 **Status:** Draft  
 **Date:** 2026-04-12
 
+> **⚠ Superseded.** This is I2H2A v0.1 — retained for reference only. The current normative specification is [I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md), which migrates to SD-JWT VC (RFC 9901), ES256/P-256, and adds a normative field visibility map. Do not implement v0.1 for new deployments.
+
 ---
 
 ### Abstract
