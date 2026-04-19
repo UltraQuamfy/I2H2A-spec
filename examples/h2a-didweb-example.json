@@ -1,8 +1,8 @@
 {
-  "_comment": "I2H2A v0.2 — H2A example. did:cheqd issuer, did:web holder, P-256 did:key agent. SD-JWT VC (RFC 9901), ES256/P-256. Signatures and keys are illustrative placeholders.",
+  "_comment": "I2H2A v0.2 — H2A example (informative). Illustrative issuer DID, did:web holder, P-256 did:key agent. SD-JWT VC (RFC 9901), ES256/P-256. Signatures and keys are illustrative placeholders.",
   "format": "sd-jwt-vc",
   "algorithm": "ES256",
-  "issuer_did": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212",
+  "issuer_did": "did:cheqd:testnet:example-only",
   "holder_did": "did:web:example.com:users:alice",
   "agent_did": "did:key:zDnaeEXAMPLEP256AgentKey",
   "sd_jwt_compact": "~~~~~~~",
@@ -10,10 +10,10 @@
     "header": {
       "alg": "ES256",
       "typ": "vc+sd-jwt",
-      "kid": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212#key-1"
+      "kid": "did:cheqd:testnet:example-only#key-1"
     },
     "payload": {
-      "iss": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212",
+      "iss": "did:cheqd:testnet:example-only",
       "sub": "did:key:zDnaeEXAMPLEP256AgentKey",
       "iat": 1713340800,
       "nbf": 1713340800,
@@ -28,10 +28,10 @@
         }
       },
       "credentialStatus": {
-        "id": "https://resolver.cheqd.net/1.0/identifiers/did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212?resourceName=statusList1&resourceType=StatusList2021Revocation",
+        "id": "https://status.example.com/status/15",
         "type": "BitstringStatusListEntry",
         "statusListIndex": 15,
-        "statusListCredential": "https://resolver.cheqd.net/1.0/identifiers/did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212?resourceName=statusList1&resourceType=StatusList2021Revocation"
+        "statusListCredential": "https://status.example.com/credentials/status-list-1"
       },
       "_sd_alg": "sha-256",
       "_sd": [
@@ -78,7 +78,7 @@
     },
     "payload": {
       "iat": 1713340800,
-      "aud": "https://ultraquamfy-production.up.railway.app",
+      "aud": "https://verifier.example.com",
       "nonce": "VERIFIER_SUPPLIED_NONCE",
       "sd_hash": "SHA256_OF_ISSUER_JWT_TILDE_DISCLOSURES"
     },

@@ -62,7 +62,7 @@ Optional object carrying additional platform-defined constraints on agent behavi
 ### authorization
 
 URI: `https://ultraquamfy.github.io/I2H2A-spec/vocab#authorization`
-Opaque platform-specific payload. Contains the A2AUAS payload in Ultra Quamfy deployments. Generic I2H2A verifiers MUST NOT interpret its contents. Selectively disclosable.
+Opaque platform-specific payload. Contains the A2AUAS payload in some platform deployments. Generic I2H2A verifiers MUST NOT interpret its contents. Selectively disclosable.
 
 ---
 

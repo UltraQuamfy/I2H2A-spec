@@ -33,7 +33,7 @@
 
 Autonomous AI agents increasingly act on behalf of humans at scale, yet verifiers (including MCP servers) require **cryptographic proof** that an agent is authorized to perform specific operations. Today there is no widely adopted, **standard** verifiable credential type that cleanly expresses **human-to-agent delegation** while allowing the **agent** to prove possession and to **sign its own Verifiable Presentations (VPs)** without returning to the human's issuer for every session.
 
-This specification defines **I2H2A** (Issuer to Holder to Agent), a credential type using **SD-JWT VC** format (RFC 9901) with **ES256/P-256** signatures throughout. An I2H2A credential **chains** a human holder's identity (as issuer of the delegation) to an **agent-controlled** decentralized identifier (typically **`did:key`** with a P-256 key), with explicit **delegation scope**, selective disclosure of sensitive fields, optional **opaque authorization** data for platform policy, and **revocation** via Bitstring Status List anchored on cheqd.
+This specification defines **I2H2A** (Issuer to Holder to Agent), a credential type using **SD-JWT VC** format (RFC 9901) with **ES256/P-256** signatures throughout. An I2H2A credential **chains** a human holder's identity (as issuer of the delegation) to an **agent-controlled** decentralized identifier (typically **`did:key`** with a P-256 key), with explicit **delegation scope**, selective disclosure of sensitive fields, optional **opaque authorization** data for platform policy, and **revocation** via Bitstring Status List credentials resolvable over HTTPS.
 
 The key innovation is operational: the **holder issues** the I2H2A credential to the agent; the **agent** holds its own keys and **autonomously** constructs and signs SD-JWT+KB presentations for verifiers. I2H2A is **DID-method agnostic** for the human and **VC-platform agnostic** for issuance and verification, enabling interoperability across wallets, identity providers, and verifier middleware without mandating any single vendor, ledger, or proprietary stack.
 
@@ -45,8 +45,8 @@ The ES256/P-256 algorithm selection aligns with Mastercard Verifiable Intent (MC
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **MAY**, and **OPTIONAL** are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals, as normative requirements in this document.
 
-- **Issuer:** The party that issues the I2H2A credential — either the platform issuer (a `did:cheqd` DID) in the reference implementation, or any conformant issuer. The issuer MUST sign the SD-JWT VC with an ES256/P-256 key registered in their DID document as a `JsonWebKey2020` verification method.
-- **Holder:** The verified human on whose behalf the agent acts. Identified by `delegatedBy` claim (a `did:cheqd` DID in the reference implementation). The holder authorises delegation but does not directly sign the SD-JWT VC in the H2A model.
+- **Issuer:** The party that issues the I2H2A credential. The issuer MUST sign the SD-JWT VC with an ES256/P-256 key registered in their DID document as a `JsonWebKey2020` verification method.
+- **Holder:** The verified human on whose behalf the agent acts. Identified by the `delegatedBy` claim (the human holder’s DID). The holder authorises delegation but does not directly sign the SD-JWT VC in the H2A model.
 - **Agent:** An autonomous system (software process) identified by `credentialSubject.id` (a P-256 `did:key`). The agent MUST control the private key corresponding to the `cnf.jwk` public key embedded in the credential, and MUST use that key to sign the KB-JWT in SD-JWT presentations.
 - **Verifier:** A system that receives an SD-JWT+KB presentation and MUST execute the verification algorithm in Section 4 before relying on the delegation. Examples include MCP servers, APIs, and policy enforcement points.
 - **SD-JWT VC:** A Verifiable Credential secured as a Selective Disclosure JWT per RFC 9901. Consists of an Issuer-signed JWT plus zero or more `~`-separated disclosures, optionally followed by a Key Binding JWT (KB-JWT).
@@ -56,7 +56,7 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 - **Delegation Scope:** Constraints embedded in `credentialSubject.scope` describing what the agent is permitted to do. Selectively disclosable. Verifiers MUST enforce scope.
 - **Authorization Payload:** The `credentialSubject.authorization` object. Opaque to generic I2H2A verifiers. Selectively disclosable. Contains the A2AUAS payload in platform deployments.
 - **Delegation Depth:** Non-negative integer. For V1, `delegationDepth` MUST be `0`. Selectively disclosable.
-- **Status List:** Bitstring Status List credential anchored on cheqd blockchain. Used to determine revocation status.
+- **Status List:** Bitstring Status List credential resolvable over HTTPS. Used to determine revocation status.
 
 ---
 
@@ -78,7 +78,7 @@ The following claims MUST always be disclosed — they MUST NOT appear in the `_
 
 | Claim | Requirement |
 |-------|-------------|
-| `iss` | MUST be the issuer DID (e.g. `did:cheqd`) |
+| `iss` | MUST be the issuer DID (e.g. `did:key`, `did:web`) |
 | `sub` | MUST be the agent DID (P-256 `did:key`) |
 | `iat` | MUST be a Unix timestamp (issuance time) |
 | `nbf` | MUST be a Unix timestamp (not-before time) |
@@ -94,7 +94,7 @@ The following claims MUST appear as SD-JWT disclosures (their hashes in the `_sd
 
 | Claim | Description |
 |-------|-------------|
-| `delegatedBy` | Human holder DID (e.g. `did:cheqd`) |
+| `delegatedBy` | Human holder DID (e.g. `did:web`, `did:key`) |
 | `parentCredential` | MUST be `null` for V1 |
 | `delegationDepth` | MUST be integer `0` for V1 |
 | `scope.mcpServers` | Array of permitted MCP server identifiers |
@@ -135,7 +135,7 @@ The following claims MUST appear as SD-JWT disclosures (their hashes in the `_sd
 | `id` | URI identifying the status list entry |
 | `type` | MUST be `"BitstringStatusListEntry"` |
 | `statusListIndex` | Non-negative integer index |
-| `statusListCredential` | URI resolving to the Bitstring Status List credential on cheqd |
+| `statusListCredential` | URI resolving to the Bitstring Status List credential (HTTPS) |
 
 #### 2.7 SD-JWT VC encoding (normative)
 
@@ -220,35 +220,23 @@ All examples use illustrative placeholder values. Production systems MUST use re
 
 #### 3.1 Example — `did:cheqd` issuer, `did:cheqd` holder, P-256 `did:key` agent
 
-**SD-JWT VC (compact serialisation, illustrative):**
-```
-eyJhbGciOiJFUzI1NiIsInR5cCI6InZjK3NkLWp3dCIsImtpZCI6ImRpZDpjaGVxZDp0ZXN0bmV0OmVjNmExMjkyLWViNDItNDc1NC1iZWYzLTljM2U5NWMzMjIxMiNrZXktMSJ9
-.
-eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDplYzZhMTI5Mi1lYjQyLTQ3NTQtYmVmMy05YzNlOTVjMzIyMTIiLCJzdWIiOiJkaWQ6a2V5OnpEbmFlUDI1NkFHRU5US0VZIiwiaWF0IjoxNzEzMzQwODAwLCJuYmYiOjE3MTMzNDA4MDAsImV4cCI6MTcxMzQyNzIwMCwidmN0IjoiSTJIMkEiLCJjbmYiOnsiandrIjp7Imt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiQUdFTlRfUFVCX1hfQkFTRTY0VVJMIiwieSI6IkFHRU5UX1BVQl9ZX0JBU0U2NFVSTCJ9fSwiY3JlZGVudGlhbFN0YXR1cyI6eyJpZCI6Imh0dHBzOi8vcmVzb2x2ZXIuY2hlcWQubmV0L3N0YXR1cy80MiIsInR5cGUiOiJCaXRzdHJpbmdTdGF0dXNMaXN0RW50cnkiLCJzdGF0dXNMaXN0SW5kZXgiOjQyLCJzdGF0dXNMaXN0Q3JlZGVudGlhbCI6Imh0dHBzOi8vcmVzb2x2ZXIuY2hlcWQubmV0L3N0YXR1cy1saXN0LTEifSwiX3NkX2FsZyI6InNoYS0yNTYiLCJfc2QiOlsiaGFzaE9mRGVsZWdhdGVkQnkiLCJoYXNoT2ZQYXJlbnRDcmVkZW50aWFsIiwiaGFzaE9mRGVsZWdhdGlvbkRlcHRoIiwiaGFzaE9mU2NvcGVNY3BTZXJ2ZXJzIiwiaGFzaE9mU2NvcGVUYXNrVHlwZSIsImhhc2hPZkF1dGhvcml6YXRpb24iXX0
-.
-ISSUER_ES256_SIGNATURE
-~WyJzYWx0MSIsImRlbGVnYXRlZEJ5IiwiZGlkOmNoZXFkOnRlc3RuZXQ6NmE4NWFlMDktMjU2OS00NTZjLWJmNDAtYjE0OTQxMGRjOTc5Il0
-~WyJzYWx0MiIsInBhcmVudENyZWRlbnRpYWwiLG51bGxd
-~WyJzYWx0MyIsImRlbGVnYXRpb25EZXB0aCIsMF0
-~WyJzYWx0NCIsInNjb3BlLm1jcFNlcnZlcnMiLFsiYW1hem9uLW1jcCJdXQ
-~WyJzYWx0NSIsInNjb3BlLnRhc2tUeXBlIiwicHJvZHVjdF9zZWFyY2giXQ
-~WyJzYWx0NiIsImF1dGhvcml6YXRpb24iLHt9XQ
-~KB_JWT_SIGNED_BY_AGENT_P256_KEY
-```
+This subsection is informative. The following uses illustrative placeholder values, including a `did:cheqd` issuer and holder for demonstration.
+
+**SD-JWT VC (compact serialisation, illustrative):** `<issuer-signed JWT>~<disclosure>~...~<disclosure>~<KB-JWT>` (structure only; not byte-for-byte tied to the decoded JSON below).
 
 **Decoded issuer-signed JWT header:**
 ```json
 {
   "alg": "ES256",
   "typ": "vc+sd-jwt",
-  "kid": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212#key-1"
+  "kid": "did:cheqd:testnet:example-only#key-1"
 }
 ```
 
 **Decoded issuer-signed JWT payload:**
 ```json
 {
-  "iss": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212",
+  "iss": "did:cheqd:testnet:example-only",
   "sub": "did:key:zDnaeP256AGENTKEY",
   "iat": 1713340800,
   "nbf": 1713340800,
@@ -263,10 +251,10 @@ ISSUER_ES256_SIGNATURE
     }
   },
   "credentialStatus": {
-    "id": "https://resolver.cheqd.net/status/42",
+    "id": "https://status.example.com/status/42",
     "type": "BitstringStatusListEntry",
     "statusListIndex": 42,
-    "statusListCredential": "https://resolver.cheqd.net/status-list-1"
+    "statusListCredential": "https://status.example.com/status-list-1"
   },
   "_sd_alg": "sha-256",
   "_sd": [
@@ -282,7 +270,7 @@ ISSUER_ES256_SIGNATURE
 
 **Example disclosures (decoded):**
 ```json
-["salt1", "delegatedBy", "did:cheqd:testnet:6a85ae09-2569-456c-bf40-b149410dc979"]
+["salt1", "delegatedBy", "did:cheqd:testnet:example-holder"]
 ["salt2", "parentCredential", null]
 ["salt3", "delegationDepth", 0]
 ["salt4", "scope.mcpServers", ["amazon-mcp"]]
@@ -294,7 +282,7 @@ ISSUER_ES256_SIGNATURE
 ```json
 {
   "iat": 1713340800,
-  "aud": "https://ultraquamfy-production.up.railway.app",
+  "aud": "https://verifier.example.com",
   "nonce": "VERIFIER_SUPPLIED_NONCE",
   "sd_hash": "SHA256_OF_ISSUER_JWT_TILDE_DISCLOSURES"
 }
@@ -402,7 +390,7 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
 
 | Role | Description |
 |------|-------------|
-| Issuer | Platform issuer (`did:cheqd`); signs SD-JWT VC with P-256 key |
+| Issuer | Platform or human issuer; signs SD-JWT VC with P-256 key |
 | Human holder | Verified human; identified by `delegatedBy`; authorises delegation |
 | Agent | Holds SD-JWT VC and P-256 agent key; constructs SD-JWT+KB presentations |
 | Verifier | Validates SD-JWT+KB and enforces scope (e.g., MCP server shim) |
@@ -415,13 +403,13 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
 
 3. **Verification:** The verifier runs the algorithm in Section 4. On success, the verifier executes the requested operation within scope.
 
-4. **Revocation:** The issuer updates the Bitstring Status List on cheqd. Future status checks fail at step 8 of Section 4.
+4. **Revocation:** The issuer updates the Bitstring Status List. Future status checks fail at step 8 of Section 4.
 
 #### 5.3 Diagram (Mermaid)
 
 ```mermaid
 sequenceDiagram
-  participant I as Issuer (did:cheqd, P-256)
+  participant I as Issuer (P-256)
   participant A as Agent (did:key P-256)
   participant V as Verifier (MCP shim)
 
@@ -439,7 +427,7 @@ sequenceDiagram
 #### 6.1 Agent key management
 
 - **Session-scoped P-256 `did:key`:** RECOMMENDED for short-lived sessions. Generated server-side per session; private key held in server memory only, never persisted after session expiry.
-- **Key storage at rest:** If agent keys must be persisted (e.g., for session resumption), MUST use Supabase Vault (V1) or AWS KMS (production).
+- **Key storage at rest:** If agent keys must be persisted, implementors MUST use a secrets manager appropriate to their deployment environment.
 - **`cnf.jwk` binding:** The holder binding check (step 5 of Section 4) is the critical security invariant — the KB-JWT proves the presenter controls the key embedded in the credential.
 
 #### 6.2 Selective disclosure discipline
@@ -450,8 +438,7 @@ sequenceDiagram
 
 #### 6.3 Revocation
 
-- Bitstring Status List on cheqd testnet has 3–6 second on-chain finality.
-- Known testnet limitation: cheqd testnet `credentialStatus` policy always returns false. Bypassed with a TODO for mainnet migration. Correct post-revocation assertion: `revoked === true && policies.credentialStatus === false`.
+- Bitstring Status List entries MUST be resolvable via HTTPS. Revocation finality depends on the status list host.
 - Verifiers SHOULD bound status cache TTL to their risk tolerance.
 
 #### 6.4 KB-JWT replay prevention
@@ -475,9 +462,9 @@ I2H2A MAY be issued by any platform capable of producing RFC 9901-conformant SD-
 
 #### 7.2 DID methods
 
-- Issuer and holder DIDs SHOULD use `did:cheqd` in the reference implementation for ledger-anchored trust and Bitstring Status List hosting.
-- Agent DIDs MUST use `did:key` with P-256 keys (`did:key:zDnae...` multibase encoding of P-256 public key).
-- Verifiers MUST support resolving `did:cheqd` and `did:key`.
+- Issuer DIDs MAY use any DID method that supports JsonWebKey2020 verification methods resolvable via the W3C Universal Resolver.
+- Agent DIDs MUST use did:key with P-256 keys (did:key:zDnae... multibase encoding of P-256 public key).
+- Verifiers MUST support resolving did:key. Verifiers SHOULD support any DID method resolvable via a configured universal resolver.
 
 #### 7.3 Mastercard Verifiable Intent alignment
 
@@ -486,7 +473,7 @@ I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 #### 7.4 MCP integration
 
 - MCP server shims SHOULD accept SD-JWT+KB presentations via OAuth 2.1–aligned bearer token exchange at session initiation.
-- The `@ultraquamfy/shim` middleware reads the I2H2A SD-JWT VC envelope (always-visible claims only), calls cheqd `/credential/verify`, resolves the agent `did:key`, checks scope fields, and grants or denies the session.
+- MCP server shim implementations MUST verify the SD-JWT+KB locally: resolve the issuer DID, verify the ES256 issuer signature, verify disclosure hashes, verify the KB-JWT holder binding, and enforce scope claims. No external credential verification API is required.
 
 ---
 
@@ -499,32 +486,26 @@ I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 **Steps:**
 
 1. Fetch the Bitstring Status List credential at `S.statusListCredential` (HTTPS, TLS required).
-2. Verify the status list credential signature (ES256, issuer `did:cheqd`).
+2. Verify the status list credential signature (ES256, issuer DID).
 3. Decode the compressed bitstring per the Bitstring Status List specification.
 4. Read bit at index `S.statusListIndex`.
 5. If bit indicates revoked per profile rules, return inactive.
-
-#### 8.2 Testnet note
-
-cheqd testnet `credentialStatus` policy always returns false regardless of actual bit value. This is a known testnet limitation. Production deployments on mainnet MUST perform the full algorithm above. TODO: remove this bypass on mainnet migration.
 
 ---
 
 ### 9. Appendix B: DID Method Examples (informative)
 
-#### 9.1 `did:cheqd` with P-256 / JsonWebKey2020
-
-**Example issuer DID:** `did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212`
+#### 9.1 did:cheqd with P-256 / JsonWebKey2020 (illustrative) — Example issuer DID: did:cheqd:testnet:example-only
 
 **DID document excerpt (v0.2 — JsonWebKey2020, P-256):**
 ```json
 {
-  "id": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212",
+  "id": "did:cheqd:testnet:example-only",
   "verificationMethod": [
     {
       "id": "#key-1",
       "type": "JsonWebKey2020",
-      "controller": "did:cheqd:testnet:ec6a1292-eb42-4754-bef3-9c3e95c32212",
+      "controller": "did:cheqd:testnet:example-only",
       "publicKeyJwk": {
         "kty": "EC",
         "crv": "P-256",

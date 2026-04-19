@@ -28,7 +28,7 @@ I2H2A defines a trust chain between three distinct roles. Understanding these ro
 The issuer is the platform or service that verifies the human's identity and issues the I2H2A credential. The platform acts as the trust anchor: it vouches that a real, verified human has consented to delegate authority to an agent. How the platform verifies human identity — KYC, OID4VP presentation of an existing credential, government wallet, or other mechanism — is a platform implementation decision. The I2H2A spec is silent on this. What the spec requires is that the issuer holds a DID, signs the I2H2A credential with that DID, and anchors revocation via a status list.
 
 **HOLDER — the human user**
-The human user is the delegating party. They receive the I2H2A credential after the platform verifies their identity, review the delegation scope, and consent to agent execution. The human's DID is typically ledger-anchored (e.g. did:cheqd, did:web) for long-term resolvability. The human does not need to be online after delegation — the credential carries the proof of their consent.
+The human user is the delegating party. They receive the I2H2A credential after the platform verifies their identity, review the delegation scope, and consent to agent execution. The human's DID is typically ledger- or web-anchored (e.g. did:web, did:key) for long-term resolvability. The human does not need to be online after delegation — the credential carries the proof of their consent.
 
 **AGENT — an ephemeral session**
 The agent is an autonomous software process acting on behalf of the human. It holds the I2H2A credential and controls its own ephemeral did:key private key generated per session. The agent constructs and signs a Verifiable Presentation autonomously and presents it to verifiers (e.g. MCP servers). No round-trip to the issuer or holder is required at presentation time. The agent's did:key is intentionally ephemeral — scoped to a single session and discarded after use.
@@ -183,7 +183,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
 
 ```json
 {
-  "iss": "did:cheqd:testnet:abc123-0000-0000-0000-000000000001",
+  "iss": "did:cheqd:testnet:example-only",
   "sub": "did:key:z6MfakeAgentKey1",
   "nbf": 1712998400,
   "exp": 1713084800,
@@ -200,15 +200,15 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
         "taskType": "product_search"
       },
       "authorization": {},
-      "delegatedBy": "did:cheqd:testnet:abc123-0000-0000-0000-000000000001",
+      "delegatedBy": "did:cheqd:testnet:example-only",
       "parentCredential": null,
       "delegationDepth": 0
     },
     "credentialStatus": {
-      "id": "https://status.list/entry/cheqd-1",
+      "id": "https://status.example.com/entry/1",
       "type": "BitstringStatusListEntry",
       "statusListIndex": 42,
-      "statusListCredential": "https://example.org/status-lists/cheqd-list-1"
+      "statusListCredential": "https://example.org/status-lists/list-1"
     }
   }
 }
@@ -423,9 +423,9 @@ I2H2A **MAY** be issued by any VC-capable platform conforming to W3C VC Data Mod
 
 #### 7.2 DID methods
 
-- Holder DIDs **MAY** use any interoperable DID method.
-- Agent DIDs **SHOULD** commonly use `did:key` for lightweight operation.
-- Verifiers **MUST** support resolving DIDs required by presented credentials.
+- Issuer DIDs **MAY** use any DID method that supports JsonWebKey2020 verification methods resolvable via the W3C Universal Resolver.
+- Agent DIDs **MUST** use did:key with P-256 keys (did:key:zDnae... multibase encoding of P-256 public key).
+- Verifiers **MUST** support resolving did:key. Verifiers **SHOULD** support any DID method resolvable via a configured universal resolver.
 
 #### 7.3 Wallet integration
 
@@ -434,7 +434,7 @@ I2H2A **MAY** be issued by any VC-capable platform conforming to W3C VC Data Mod
 #### 7.4 MCP integration
 
 - MCP servers **SHOULD** accept VPs via OAuth 2.1–aligned bearer token profiles where applicable.
-- Middleware **MAY** centralize verification per Section 4.
+- MCP server shim implementations **MUST** verify presentations per Section 4 (resolve issuer DID, verify signatures, enforce scope). No external credential verification API is required for baseline conformance.
 
 ---
 
@@ -471,20 +471,19 @@ function statusListSaysActive(S) -> bool
 
 ### 9. Appendix B: DID Method Examples (informative)
 
-#### 9.1 `did:cheqd` (illustrative)
+#### 9.1 did:cheqd (illustrative) — Example DID: did:cheqd:testnet:example-only
 
-- **Example DID:** `did:cheqd:testnet:550e8400-e29b-41d4-a716-446655440000`
-- **Resolution:** Use a cheqd-compliant DID resolver or universal resolver.
+- **Resolution:** Use a DID resolver or universal resolver for the `did:cheqd` method.
 - **DID document excerpt:**
 
 ```json
 {
-  "id": "did:cheqd:testnet:550e8400-e29b-41d4-a716-446655440000",
+  "id": "did:cheqd:testnet:example-only",
   "verificationMethod": [
     {
       "id": "#key-1",
       "type": "Ed25519VerificationKey2020",
-      "controller": "did:cheqd:testnet:550e8400-e29b-41d4-a716-446655440000",
+      "controller": "did:cheqd:testnet:example-only",
       "publicKeyMultibase": "z6MkEXAMPLE"
     }
   ],

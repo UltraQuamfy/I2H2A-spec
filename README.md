@@ -2,7 +2,7 @@
 
 **A W3C-aligned SD-JWT VC credential type for cryptographic human-to-agent delegation**
 
-I2H2A defines a standard credential type so a verified human holder can cryptographically delegate authority to an autonomous agent (e.g. for MCP servers) without platform lock-in. It fills the gap between "user consented in a UI" and "verifier can prove delegation, scope, and revocation" using SD-JWT VC (RFC 9901), ES256/P-256 signatures, and on-chain Bitstring Status List revocation.
+I2H2A defines a standard credential type so a verified human holder can cryptographically delegate authority to an autonomous agent (e.g. for MCP servers) without platform lock-in. It fills the gap between "user consented in a UI" and "verifier can prove delegation, scope, and revocation" using SD-JWT VC (RFC 9901), ES256/P-256 signatures, and Bitstring Status List revocation (HTTPS-resolvable status lists).
 
 Implementers who issue or verify delegated agent access — wallet vendors, identity providers, MCP server operators, and standards bodies — should adopt it to enable a common verification and interoperability story across ecosystems.
 
@@ -20,10 +20,10 @@ I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-2
 
 - **Format:** SD-JWT VC (RFC 9901)
 - **Algorithm:** ES256 / P-256
-- **Issuer DID:** `did:cheqd` with `JsonWebKey2020` verification method
+- **Issuer DID:** any DID method with a JsonWebKey2020 verification method (e.g. did:key, did:web, did:cheqd)
 - **Agent DID:** `did:key` (P-256, session-scoped)
 - **Holder binding:** KB-JWT signed by agent P-256 key (`cnf.jwk`)
-- **Revocation:** Bitstring Status List anchored on cheqd
+- **Revocation:** Bitstring Status List (HTTPS-resolvable)
 - **VP mechanics:** SD-JWT+KB presented at MCP session initiation via OID4VP
 
 ## Chain models
@@ -39,7 +39,7 @@ Every credential in every chain MUST trace back to a verified human `delegatedBy
 
 See `examples/` for complete SD-JWT VC samples:
 
-- [H2A with did:cheqd](./examples/h2a-cheqd-example.json) — on-chain anchored holder DID, P-256
+- [H2A with did:cheqd](./examples/h2a-cheqd-example.json) — illustrative did:cheqd holder and issuer (example JSON), P-256
 - [H2A with did:key](./examples/h2a-didkey-example.json) — ephemeral holder and agent DIDs
 - [H2A with did:web](./examples/h2a-didweb-example.json) — web-hosted holder DID
 
