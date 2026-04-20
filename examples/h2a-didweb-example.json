@@ -18,7 +18,7 @@
       "iat": 1713340800,
       "nbf": 1713340800,
       "exp": 1713427200,
-      "vct": "I2H2A",
+      "vct": "https://rotavera.io/credentials/I2H2A",
       "cnf": {
         "jwk": {
           "kty": "EC",

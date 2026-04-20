@@ -66,7 +66,7 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 
 An I2H2A SD-JWT VC:
 
-1. MUST use `vct` claim value `"I2H2A"`.
+1. MUST use `vct` claim value `"https://rotavera.io/credentials/I2H2A"`.
 2. MUST be signed with ES256 (P-256) by the issuer.
 3. MUST include `cnf.jwk` containing the agent's P-256 public key.
 4. MUST include `_sd_alg: "sha-256"`.
@@ -83,7 +83,7 @@ The following claims MUST always be disclosed — they MUST NOT appear in the `_
 | `iat` | MUST be a Unix timestamp (issuance time) |
 | `nbf` | MUST be a Unix timestamp (not-before time) |
 | `exp` | MUST be a Unix timestamp (expiry time) |
-| `vct` | MUST be the string `"I2H2A"` |
+| `vct` | MUST be the URI `"https://rotavera.io/credentials/I2H2A"` |
 | `credentialStatus` | MUST be present; MUST conform to Section 2.5 |
 | `cnf` | MUST be present; MUST contain `jwk` sub-object with agent's P-256 public key |
 | `_sd_alg` | MUST be `"sha-256"` |
@@ -158,7 +158,7 @@ I2H2A credentials MUST be encoded as SD-JWT VCs per RFC 9901.
   "iat": 1713340800,
   "nbf": 1713340800,
   "exp": 1713427200,
-  "vct": "I2H2A",
+  "vct": "https://rotavera.io/credentials/I2H2A",
   "cnf": {
     "jwk": {
       "kty": "EC",
@@ -241,7 +241,7 @@ This subsection is informative. The following uses illustrative placeholder valu
   "iat": 1713340800,
   "nbf": 1713340800,
   "exp": 1713427200,
-  "vct": "I2H2A",
+  "vct": "https://rotavera.io/credentials/I2H2A",
   "cnf": {
     "jwk": {
       "kty": "EC",
@@ -306,7 +306,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 
 2. **Verify issuer signature.** Resolve the issuer DID from `iss` claim. Obtain the verification key identified by `kid`. Verify the ES256 signature on the issuer-signed JWT. If this fails, return `valid = false`, error `issuer_signature_invalid`.
 
-3. **Verify `vct`.** The `vct` claim MUST equal `"I2H2A"`. Otherwise return `valid = false`, error `invalid_vct`.
+3. **Verify `vct`.** The `vct` claim MUST equal `"https://rotavera.io/credentials/I2H2A"`. Otherwise return `valid = false`, error `invalid_vct`.
 
 4. **Verify disclosures.** For each disclosure, compute `sha-256(disclosure)` and verify it appears in the `_sd` array of the issuer JWT payload. Discard any disclosure whose hash is not present. Reconstruct the disclosed claims.
 
@@ -346,7 +346,7 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
   issuerKey := resolveVerificationKey(issuerDID, kid)
   if !verifyES256(issuerJWT, issuerKey) then return (false, ["issuer_signature_invalid"])
 
-  if getClaim(issuerJWT, "vct") != "I2H2A" then return (false, ["invalid_vct"])
+  if getClaim(issuerJWT, "vct") != "https://rotavera.io/credentials/I2H2A" then return (false, ["invalid_vct"])
 
   sdArray := getClaim(issuerJWT, "_sd")
   disclosedClaims := {}
@@ -545,7 +545,7 @@ I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 **Informative:**
 
 - W3C Status List 2021
-- RFC 8032: ES256 — superseded in this spec by ES256
+- RFC 8032: EdDSA — superseded in this spec by ES256
 - Mastercard Verifiable Intent specification (verifiableintent.dev)
 - cheqd Trust Registry documentation
 

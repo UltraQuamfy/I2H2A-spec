@@ -60,7 +60,7 @@ Reference implementation of SD-JWT+KB verification middleware for MCP servers:
 [UltraQuamfy/I2H2A-middleware](https://github.com/UltraQuamfy/I2H2A-middleware)
 
 ```
-npm install @i2h2a/mcp-middleware
+npm install @rotavera/mcp-middleware
 ```
 
 ## License
