@@ -55,12 +55,12 @@ Source: [contexts/v1.jsonld](./contexts/v1.jsonld)
 
 ## Middleware
 
-Reference implementation of SD-JWT+KB verification middleware for MCP servers:
+Reference implementation of SD-JWT+KB verification for any integration point:
 
 [UltraQuamfy/I2H2A-middleware](https://github.com/UltraQuamfy/I2H2A-middleware)
 
 ```
-npm install @rotavera/mcp-middleware
+npm install @rotavera/verification-sdk
 ```
 
 ## License
