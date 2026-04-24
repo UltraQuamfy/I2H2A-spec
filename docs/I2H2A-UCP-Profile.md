@@ -2,7 +2,8 @@
 
 ## 1. Overview
 
-This document defines a normative integration profile for using I2H2A SD-JWT+KB credentials in Universal Commerce Protocol (UCP) flows.
+This document defines a normative UCP-specific integration profile for using I2H2A SD-JWT+KB credentials in Universal Commerce Protocol (UCP) flows.
+It is an adaptation layer on top of the MCVI-aligned I2H2A core specification.
 
 I2H2A and UCP address different trust layers:
 
@@ -47,12 +48,13 @@ Verifiers MUST enforce:
 
 ### 2.2 Scope mapping to UCP operations
 
-Current I2H2A v0.2 fields are `scope.services` and `scope.taskType`.
+Core I2H2A v0.2 fields are `scope.mcpServers` and `scope.taskType` in the MCVI-aligned profile.
 
 For UCP usage:
 
 - `scope.taskType` SHOULD represent the operation class (for example: checkout, discovery, order).
-- `scope.services` SHOULD be interpreted as verifier/service identifiers in the current implementation, including UCP merchant verifier identifiers where used.
+- For UCP usage, implementations SHOULD project `scope.mcpServers` into `scope.services` as verifier/service identifiers, including UCP merchant verifier identifiers where used.
+- UCP verifiers SHOULD treat `scope.services` as authoritative when present, and MAY derive equivalent semantics from `scope.mcpServers` for compatibility with the core profile.
 
 Because UCP capability identifiers are namespaced (for example `dev.ucp.shopping.checkout`), implementers SHOULD define a shared mapping policy from UCP operation/capability to `scope.taskType` values.
 
