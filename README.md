@@ -20,8 +20,8 @@ I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-2
 
 - **Format:** SD-JWT VC (RFC 9901)
 - **Algorithm:** ES256 / P-256
-- **Issuer DID:** any DID method with a JsonWebKey2020 verification method (e.g. did:key, did:web, did:cheqd)
-- **Agent DID:** `did:key` (P-256, session-scoped)
+- **Issuer DID:** any DID method with a JsonWebKey2020 verification method (e.g. did:key, did:web, did:example)
+- **Agent DID:** SHOULD use `did:key` for ephemeral sessions; MAY use any DID method
 - **Holder binding:** KB-JWT signed by agent P-256 key (`cnf.jwk`)
 - **Revocation:** Bitstring Status List (HTTPS-resolvable)
 - **VP mechanics:** SD-JWT+KB presented at MCP session initiation via OID4VP
@@ -39,13 +39,13 @@ Every credential in every chain MUST trace back to a verified human `delegatedBy
 
 See `examples/` for complete SD-JWT VC samples:
 
-- [H2A with did:cheqd](./examples/h2a-cheqd-example.json) — illustrative did:cheqd holder and issuer (example JSON), P-256
+- [H2A with did:example](./examples/h2a-cheqd-example.json) — illustrative did:example holder and issuer (example JSON), P-256
 - [H2A with did:key](./examples/h2a-didkey-example.json) — ephemeral holder and agent DIDs
 - [H2A with did:web](./examples/h2a-didweb-example.json) — web-hosted holder DID
 
 ## JSON-LD context
 
-Live context: `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld`
+Live context: `https://i2h2a.org/contexts/v1.jsonld`
 
 Source: [contexts/v1.jsonld](./contexts/v1.jsonld)
 
@@ -57,7 +57,7 @@ Source: [contexts/v1.jsonld](./contexts/v1.jsonld)
 
 Reference implementation of SD-JWT+KB verification for any integration point:
 
-[UltraQuamfy/I2H2A-middleware](https://github.com/UltraQuamfy/I2H2A-middleware)
+[I2H2A-middleware](https://github.com/i2h2a-org/I2H2A-middleware)
 
 ```
 npm install @rotavera/verification-sdk

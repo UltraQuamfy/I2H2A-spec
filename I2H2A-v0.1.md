@@ -87,7 +87,7 @@ The following properties **MUST** appear as specified. Additional properties **M
 
 | Property | Requirement |
 |----------|---------------|
-| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` |
+| `@context` | **MUST** be an array including `https://www.w3.org/2018/credentials/v1` and `https://i2h2a.org/contexts/v1.jsonld` |
 | `type` | **MUST** include `VerifiableCredential` and `I2H2A` |
 | `issuer` | **MUST** be a string **DID** identifying the human holder (any DID method) |
 | `validFrom` | **MUST** be an ISO 8601 datetime (maps to JWT `nbf` claim) |
@@ -123,27 +123,27 @@ The `credentialStatus` object **MUST** contain:
 
 #### 2.5 JSON-LD context (normative fragment)
 
-The resource at `https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
+The resource at `https://i2h2a.org/contexts/v1.jsonld` **SHOULD** define terms used by I2H2A deployments. The following **JSON-LD** `@context` document is **non-normative** but illustrates expected term definitions for interoperability tooling:
 
 ```json
 {
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "I2H2A": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#I2H2A",
-    "delegatedBy": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegatedBy",
-    "parentCredential": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#parentCredential",
-    "delegationDepth": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#delegationDepth",
-    "scope": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#scope",
-    "mcpServers": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#mcpServers",
-    "taskType": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#taskType",
-    "constraints": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#constraints",
-    "authorization": "https://ultraquamfy.github.io/I2H2A-spec/vocab.md#authorization"
+    "I2H2A": "https://i2h2a.org/vocab#I2H2A",
+    "delegatedBy": "https://i2h2a.org/vocab#delegatedBy",
+    "parentCredential": "https://i2h2a.org/vocab#parentCredential",
+    "delegationDepth": "https://i2h2a.org/vocab#delegationDepth",
+    "scope": "https://i2h2a.org/vocab#scope",
+    "mcpServers": "https://i2h2a.org/vocab#mcpServers",
+    "taskType": "https://i2h2a.org/vocab#taskType",
+    "constraints": "https://i2h2a.org/vocab#constraints",
+    "authorization": "https://i2h2a.org/vocab#authorization"
   }
 }
 ```
 
-> **Note:** The context document is hosted at the GitHub Pages URL above. The domain `https://ultraquamfy.github.io/I2H2A-spec` is reserved for a future stable home; implementers SHOULD use the GitHub Pages URL until further notice.
+> **Note:** The context document is hosted at the URI above for interoperability examples and may be mirrored by implementers.
 
 #### 2.6 JWT-VC encoding (VC secured with JWT)
 
@@ -162,7 +162,7 @@ Normative minimum for interoperability:
 
 The following examples are **illustrative**. Placeholder signatures are shown; production systems **MUST** use real cryptographic signatures.
 
-#### 3.1 Example 1 — `did:cheqd` holder, `did:key` agent
+#### 3.1 Example 1 — `did:example` holder, `did:key` agent
 
 **Full JWT (illustrative, single line):**
 
@@ -183,14 +183,14 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
 
 ```json
 {
-  "iss": "did:cheqd:testnet:example-only",
+  "iss": "did:example:holder",
   "sub": "did:key:z6MfakeAgentKey1",
   "nbf": 1712998400,
   "exp": 1713084800,
   "vc": {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://ultraquamfy.github.io/I2H2A-spec/contexts/v1.jsonld"
+      "https://i2h2a.org/contexts/v1.jsonld"
     ],
     "type": ["VerifiableCredential", "I2H2A"],
     "credentialSubject": {
@@ -200,7 +200,7 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
         "taskType": "product_search"
       },
       "authorization": {},
-      "delegatedBy": "did:cheqd:testnet:example-only",
+      "delegatedBy": "did:example:holder",
       "parentCredential": null,
       "delegationDepth": 0
     },
@@ -424,7 +424,7 @@ I2H2A **MAY** be issued by any VC-capable platform conforming to W3C VC Data Mod
 #### 7.2 DID methods
 
 - Issuer DIDs **MAY** use any DID method that supports JsonWebKey2020 verification methods resolvable via the W3C Universal Resolver.
-- Agent DIDs **MUST** use did:key with P-256 keys (did:key:zDnae... multibase encoding of P-256 public key).
+- Agent DIDs **SHOULD** use did:key with P-256 keys for ephemeral sessions (did:key:zDnae... multibase encoding of P-256 public key). Agent DIDs **MAY** use any DID method.
 - Verifiers **MUST** support resolving did:key. Verifiers **SHOULD** support any DID method resolvable via a configured universal resolver.
 
 #### 7.3 Wallet integration
@@ -471,19 +471,19 @@ function statusListSaysActive(S) -> bool
 
 ### 9. Appendix B: DID Method Examples (informative)
 
-#### 9.1 did:cheqd (illustrative) — Example DID: did:cheqd:testnet:example-only
+#### 9.1 did:example (illustrative) — Example DID: did:example:issuer
 
-- **Resolution:** Use a DID resolver or universal resolver for the `did:cheqd` method.
+- **Resolution:** Use a DID resolver or universal resolver for the selected DID method.
 - **DID document excerpt:**
 
 ```json
 {
-  "id": "did:cheqd:testnet:example-only",
+  "id": "did:example:issuer",
   "verificationMethod": [
     {
       "id": "#key-1",
       "type": "Ed25519VerificationKey2020",
-      "controller": "did:cheqd:testnet:example-only",
+      "controller": "did:example:issuer",
       "publicKeyMultibase": "z6MkEXAMPLE"
     }
   ],

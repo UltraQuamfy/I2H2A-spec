@@ -1,19 +1,19 @@
 {
-  "_comment": "I2H2A v0.2 — H2A example (informative). Illustrative did:cheqd issuer and holder, P-256 did:key agent. SD-JWT VC (RFC 9901), ES256/P-256. Signatures and keys are illustrative placeholders.",
+  "_comment": "I2H2A v0.2 — H2A example (informative). Illustrative did:example issuer and holder, P-256 did:key agent. SD-JWT VC (RFC 9901), ES256/P-256. Signatures and keys are illustrative placeholders.",
   "format": "sd-jwt-vc",
   "algorithm": "ES256",
-  "issuer_did": "did:cheqd:testnet:example-only",
-  "holder_did": "did:cheqd:testnet:example-holder",
+  "issuer_did": "did:example:issuer",
+  "holder_did": "did:example:holder",
   "agent_did": "did:key:zDnaeEXAMPLEP256AgentKey",
   "sd_jwt_compact": "~~~~~~~",
   "issuer_signed_jwt": {
     "header": {
       "alg": "ES256",
       "typ": "vc+sd-jwt",
-      "kid": "did:cheqd:testnet:example-only#key-1"
+      "kid": "did:example:issuer#key-1"
     },
     "payload": {
-      "iss": "did:cheqd:testnet:example-only",
+      "iss": "did:example:issuer",
       "sub": "did:key:zDnaeEXAMPLEP256AgentKey",
       "iat": 1713340800,
       "nbf": 1713340800,
@@ -48,7 +48,7 @@
   "disclosures": [
     {
       "claim": "delegatedBy",
-      "decoded": ["SALT_1", "delegatedBy", "did:cheqd:testnet:example-holder"]
+      "decoded": ["SALT_1", "delegatedBy", "did:example:holder"]
     },
     {
       "claim": "parentCredential",

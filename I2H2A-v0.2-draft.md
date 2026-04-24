@@ -218,9 +218,9 @@ The KB-JWT MUST be signed with the agent's P-256 private key corresponding to `c
 
 All examples use illustrative placeholder values. Production systems MUST use real cryptographic signatures and keys.
 
-#### 3.1 Example — `did:cheqd` issuer, `did:cheqd` holder, P-256 `did:key` agent
+#### 3.1 Example — `did:example` issuer, `did:example` holder, P-256 `did:key` agent
 
-This subsection is informative. The following uses illustrative placeholder values, including a `did:cheqd` issuer and holder for demonstration.
+This subsection is informative. The following uses illustrative placeholder values, including a `did:example` issuer and holder for demonstration.
 
 **SD-JWT VC (compact serialisation, illustrative):** `<issuer-signed JWT>~<disclosure>~...~<disclosure>~<KB-JWT>` (structure only; not byte-for-byte tied to the decoded JSON below).
 
@@ -229,14 +229,14 @@ This subsection is informative. The following uses illustrative placeholder valu
 {
   "alg": "ES256",
   "typ": "vc+sd-jwt",
-  "kid": "did:cheqd:testnet:example-only#key-1"
+  "kid": "did:example:issuer#key-1"
 }
 ```
 
 **Decoded issuer-signed JWT payload:**
 ```json
 {
-  "iss": "did:cheqd:testnet:example-only",
+  "iss": "did:example:issuer",
   "sub": "did:key:zDnaeP256AGENTKEY",
   "iat": 1713340800,
   "nbf": 1713340800,
@@ -270,7 +270,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 
 **Example disclosures (decoded):**
 ```json
-["salt1", "delegatedBy", "did:cheqd:testnet:example-holder"]
+["salt1", "delegatedBy", "did:example:holder"]
 ["salt2", "parentCredential", null]
 ["salt3", "delegationDepth", 0]
 ["salt4", "scope.mcpServers", ["amazon-mcp"]]
@@ -463,7 +463,7 @@ I2H2A MAY be issued by any platform capable of producing RFC 9901-conformant SD-
 #### 7.2 DID methods
 
 - Issuer DIDs MAY use any DID method that supports JsonWebKey2020 verification methods resolvable via the W3C Universal Resolver.
-- Agent DIDs MUST use did:key with P-256 keys (did:key:zDnae... multibase encoding of P-256 public key).
+- Agent DIDs SHOULD use did:key with P-256 keys for ephemeral sessions (did:key:zDnae... multibase encoding of P-256 public key). Agent DIDs MAY use any DID method.
 - Verifiers MUST support resolving did:key. Verifiers SHOULD support any DID method resolvable via a configured universal resolver.
 
 #### 7.3 Mastercard Verifiable Intent alignment
@@ -495,17 +495,17 @@ I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 
 ### 9. Appendix B: DID Method Examples (informative)
 
-#### 9.1 did:cheqd with P-256 / JsonWebKey2020 (illustrative) — Example issuer DID: did:cheqd:testnet:example-only
+#### 9.1 did:example with P-256 / JsonWebKey2020 (illustrative) — Example issuer DID: did:example:issuer
 
 **DID document excerpt (v0.2 — JsonWebKey2020, P-256):**
 ```json
 {
-  "id": "did:cheqd:testnet:example-only",
+  "id": "did:example:issuer",
   "verificationMethod": [
     {
       "id": "#key-1",
       "type": "JsonWebKey2020",
-      "controller": "did:cheqd:testnet:example-only",
+      "controller": "did:example:issuer",
       "publicKeyJwk": {
         "kty": "EC",
         "crv": "P-256",
