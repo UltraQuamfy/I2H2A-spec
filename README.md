@@ -60,7 +60,7 @@ Reference implementation of SD-JWT+KB verification for any integration point:
 [I2H2A-middleware](https://github.com/i2h2a-org/I2H2A-middleware)
 
 ```
-npm install @rotavera/verification-sdk
+npm install @i2h2a/verification-sdk
 ```
 
 ## License

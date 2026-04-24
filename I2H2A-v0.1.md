@@ -1,3 +1,4 @@
+> **Archived — superseded by I2H2A v0.2.** This document is retained for historical reference only. Do not implement.
 # I2H2A Specification v0.1
 
 ## Issuer to Holder to Agent Delegation Credential
