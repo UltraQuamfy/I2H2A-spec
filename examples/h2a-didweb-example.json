@@ -18,7 +18,7 @@
       "iat": 1713340800,
       "nbf": 1713340800,
       "exp": 1713427200,
-      "vct": "https://rotavera.io/credentials/I2H2A",
+      "vct": "https://i2h2a.org/credentials/I2H2A",
       "cnf": {
         "jwk": {
           "kty": "EC",
@@ -28,10 +28,10 @@
         }
       },
       "credentialStatus": {
-        "id": "https://status.example.com/status/15",
+        "id": "https://i2h2a.org/status/15",
         "type": "BitstringStatusListEntry",
         "statusListIndex": 15,
-        "statusListCredential": "https://status.example.com/credentials/status-list-1"
+        "statusListCredential": "https://i2h2a.org/credentials/status-list-1"
       },
       "_sd_alg": "sha-256",
       "_sd": [
@@ -78,7 +78,7 @@
     },
     "payload": {
       "iat": 1713340800,
-      "aud": "https://verifier.example.com",
+      "aud": "https://i2h2a.org/verifier",
       "nonce": "VERIFIER_SUPPLIED_NONCE",
       "sd_hash": "SHA256_OF_ISSUER_JWT_TILDE_DISCLOSURES"
     },

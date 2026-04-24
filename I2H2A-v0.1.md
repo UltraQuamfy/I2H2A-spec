@@ -205,10 +205,10 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6Y2hlcWQ6dGVzdG5ldDphYmMxMjM
       "delegationDepth": 0
     },
     "credentialStatus": {
-      "id": "https://status.example.com/entry/1",
+      "id": "https://i2h2a.org/entry/1",
       "type": "BitstringStatusListEntry",
       "statusListIndex": 42,
-      "statusListCredential": "https://example.org/status-lists/list-1"
+      "statusListCredential": "https://i2h2a.org/status-lists/list-1"
     }
   }
 }
@@ -255,10 +255,10 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6d2ViOmV4YW1wbGUuY29tOnVzZXJ
       "delegationDepth": 0
     },
     "credentialStatus": {
-      "id": "https://example.com/status/bitstring/entry/3",
+      "id": "https://i2h2a.org/status/bitstring/entry/3",
       "type": "BitstringStatusListEntry",
       "statusListIndex": 3,
-      "statusListCredential": "https://example.com/.well-known/status-list.json"
+      "statusListCredential": "https://i2h2a.org/.well-known/status-list.json"
     }
   }
 }

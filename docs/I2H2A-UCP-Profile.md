@@ -214,7 +214,7 @@ For UCP checkout latency sensitivity, deployments SHOULD:
 ```http
 POST /checkout-sessions/abc/complete HTTP/1.1
 Authorization: Bearer eyJhbGciOi...
-UCP-Agent: profile="https://platform.example/.well-known/ucp-profile.json"
+UCP-Agent: profile="https://i2h2a.org/.well-known/ucp-profile.json"
 X-I2H2A-Presentation: <issuer-jwt>~<disclosure>~...~<kb-jwt>
 Content-Type: application/json
 
@@ -241,7 +241,7 @@ Content-Type: application/json
     "arguments": {
       "meta": {
         "ucp-agent": {
-          "profile": "https://platform.example/.well-known/ucp-profile.json"
+          "profile": "https://i2h2a.org/.well-known/ucp-profile.json"
         },
         "i2h2a": {
           "presentation": "<issuer-jwt>~<disclosure>~...~<kb-jwt>"

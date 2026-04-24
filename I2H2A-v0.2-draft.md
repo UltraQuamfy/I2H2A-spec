@@ -251,10 +251,10 @@ This subsection is informative. The following uses illustrative placeholder valu
     }
   },
   "credentialStatus": {
-    "id": "https://status.example.com/status/42",
+    "id": "https://i2h2a.org/status/42",
     "type": "BitstringStatusListEntry",
     "statusListIndex": 42,
-    "statusListCredential": "https://status.example.com/status-list-1"
+    "statusListCredential": "https://i2h2a.org/status-list-1"
   },
   "_sd_alg": "sha-256",
   "_sd": [
@@ -282,7 +282,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 ```json
 {
   "iat": 1713340800,
-  "aud": "https://verifier.example.com",
+  "aud": "https://i2h2a.org/verifier",
   "nonce": "VERIFIER_SUPPLIED_NONCE",
   "sd_hash": "SHA256_OF_ISSUER_JWT_TILDE_DISCLOSURES"
 }
