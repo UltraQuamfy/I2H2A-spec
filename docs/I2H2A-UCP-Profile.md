@@ -28,7 +28,7 @@ This profile applies across UCP transports (REST, MCP, A2A, Embedded).
 
 Implementations using this profile MUST require an I2H2A SD-JWT VC that conforms to I2H2A v0.2, including:
 
-- `vct` = `https://rotavera.io/credentials/I2H2A`
+- `vct` = `https://i2h2a.org/credentials/I2H2A`
 - `iss`, `sub`, `iat`, `nbf` (if present), `exp`
 - `cnf.jwk` with `kty=EC`, `crv=P-256`, `x`, `y`
 - `_sd_alg` = `sha-256`
@@ -47,12 +47,12 @@ Verifiers MUST enforce:
 
 ### 2.2 Scope mapping to UCP operations
 
-Current I2H2A v0.2 fields are `scope.mcpServers` and `scope.taskType`.
+Current I2H2A v0.2 fields are `scope.services` and `scope.taskType`.
 
 For UCP usage:
 
 - `scope.taskType` SHOULD represent the operation class (for example: checkout, discovery, order).
-- `scope.mcpServers` SHOULD be interpreted as verifier/service identifiers in the current implementation, including UCP merchant verifier identifiers where used.
+- `scope.services` SHOULD be interpreted as verifier/service identifiers in the current implementation, including UCP merchant verifier identifiers where used.
 
 Because UCP capability identifiers are namespaced (for example `dev.ucp.shopping.checkout`), implementers SHOULD define a shared mapping policy from UCP operation/capability to `scope.taskType` values.
 
@@ -162,7 +162,7 @@ Current middleware response shape:
     "agentDid": "did:key:...",
     "delegatedBy": "did:...",
     "scope": {
-      "mcpServers": ["..."],
+      "services": ["..."],
       "taskType": "..."
     },
     "authorization": {}

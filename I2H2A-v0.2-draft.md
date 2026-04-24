@@ -31,13 +31,13 @@
 
 ### Abstract
 
-Autonomous AI agents increasingly act on behalf of humans at scale, yet verifiers (including MCP servers) require **cryptographic proof** that an agent is authorized to perform specific operations. Today there is no widely adopted, **standard** verifiable credential type that cleanly expresses **human-to-agent delegation** while allowing the **agent** to prove possession and to **sign its own Verifiable Presentations (VPs)** without returning to the human's issuer for every session.
+Autonomous AI agents increasingly act on behalf of humans at scale, yet verifiers (including MCP servers, UCP REST endpoints, A2A receivers, and embedded runtimes) require **cryptographic proof** that an agent is authorized to perform specific operations. Today there is no widely adopted, **standard** verifiable credential type that cleanly expresses **human-to-agent delegation** while allowing the **agent** to prove possession and to **sign its own Verifiable Presentations (VPs)** without returning to the human's issuer for every session.
 
 This specification defines **I2H2A** (Issuer to Holder to Agent), a credential type using **SD-JWT VC** format (RFC 9901) with **ES256/P-256** signatures throughout. An I2H2A credential **chains** a human holder's identity (as issuer of the delegation) to an **agent-controlled** decentralized identifier (typically **`did:key`** with a P-256 key), with explicit **delegation scope**, selective disclosure of sensitive fields, optional **opaque authorization** data for platform policy, and **revocation** via Bitstring Status List credentials resolvable over HTTPS.
 
 The key innovation is operational: the **holder issues** the I2H2A credential to the agent; the **agent** holds its own keys and **autonomously** constructs and signs SD-JWT+KB presentations for verifiers. I2H2A is **DID-method agnostic** for the human and **VC-platform agnostic** for issuance and verification, enabling interoperability across wallets, identity providers, and verifier middleware without mandating any single vendor, ledger, or proprietary stack.
 
-The ES256/P-256 algorithm selection aligns with Mastercard Verifiable Intent (MC VI), enabling future multi-credential VP presentations where an I2H2A delegation credential and an MC VI payment credential are co-presented in a single VP to an MCP server.
+The ES256/P-256 algorithm selection aligns with Mastercard Verifiable Intent (MC VI), enabling future multi-credential VP presentations where an I2H2A delegation credential and an MC VI payment credential are co-presented in a single VP to a verifier endpoint (for example MCP, UCP REST, A2A, or embedded transport handlers).
 
 ---
 
@@ -48,7 +48,7 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 - **Issuer:** The party that issues the I2H2A credential. The issuer MUST sign the SD-JWT VC with an ES256/P-256 key registered in their DID document as a `JsonWebKey2020` verification method.
 - **Holder:** The verified human on whose behalf the agent acts. Identified by the `delegatedBy` claim (the human holder’s DID). The holder authorises delegation but does not directly sign the SD-JWT VC in the H2A model.
 - **Agent:** An autonomous system (software process) identified by `credentialSubject.id` (a P-256 `did:key`). The agent MUST control the private key corresponding to the `cnf.jwk` public key embedded in the credential, and MUST use that key to sign the KB-JWT in SD-JWT presentations.
-- **Verifier:** A system that receives an SD-JWT+KB presentation and MUST execute the verification algorithm in Section 4 before relying on the delegation. Examples include MCP servers, APIs, and policy enforcement points.
+- **Verifier:** A system that receives an SD-JWT+KB presentation and MUST execute the verification algorithm in Section 4 before relying on the delegation. Examples include MCP servers, UCP REST verifiers, A2A endpoints, embedded runtimes, APIs, and policy enforcement points.
 - **SD-JWT VC:** A Verifiable Credential secured as a Selective Disclosure JWT per RFC 9901. Consists of an Issuer-signed JWT plus zero or more `~`-separated disclosures, optionally followed by a Key Binding JWT (KB-JWT).
 - **KB-JWT:** Key Binding JWT. A JWT signed by the agent's private key, binding the SD-JWT presentation to a specific audience and nonce. MUST be appended to SD-JWT+KB presentations per RFC 9901.
 - **Disclosure:** A base64url-encoded JSON array `[salt, claim_name, claim_value]` revealing one selectively disclosable claim. The verifier MUST verify each disclosure's hash against the `_sd` array in the SD-JWT payload.
@@ -66,7 +66,7 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 
 An I2H2A SD-JWT VC:
 
-1. MUST use `vct` claim value `"https://rotavera.io/credentials/I2H2A"`.
+1. MUST use `vct` claim value `"https://i2h2a.org/credentials/I2H2A"`.
 2. MUST be signed with ES256 (P-256) by the issuer.
 3. MUST include `cnf.jwk` containing the agent's P-256 public key.
 4. MUST include `_sd_alg: "sha-256"`.
@@ -83,7 +83,7 @@ The following claims MUST always be disclosed — they MUST NOT appear in the `_
 | `iat` | MUST be a Unix timestamp (issuance time) |
 | `nbf` | MUST be a Unix timestamp (not-before time) |
 | `exp` | MUST be a Unix timestamp (expiry time) |
-| `vct` | MUST be the URI `"https://rotavera.io/credentials/I2H2A"` |
+| `vct` | MUST be the URI `"https://i2h2a.org/credentials/I2H2A"` |
 | `credentialStatus` | MUST be present; MUST conform to Section 2.5 |
 | `cnf` | MUST be present; MUST contain `jwk` sub-object with agent's P-256 public key |
 | `_sd_alg` | MUST be `"sha-256"` |
@@ -97,7 +97,7 @@ The following claims MUST appear as SD-JWT disclosures (their hashes in the `_sd
 | `delegatedBy` | Human holder DID (e.g. `did:web`, `did:key`) |
 | `parentCredential` | MUST be `null` for V1 |
 | `delegationDepth` | MUST be integer `0` for V1 |
-| `scope.mcpServers` | Array of permitted MCP server identifiers |
+| `scope.services` | Array of permitted verifier/service identifiers |
 | `scope.taskType` | String describing permitted task class |
 | `authorization` | Opaque object; contains A2AUAS payload in platform deployments |
 
@@ -158,7 +158,7 @@ I2H2A credentials MUST be encoded as SD-JWT VCs per RFC 9901.
   "iat": 1713340800,
   "nbf": 1713340800,
   "exp": 1713427200,
-  "vct": "https://rotavera.io/credentials/I2H2A",
+  "vct": "https://i2h2a.org/credentials/I2H2A",
   "cnf": {
     "jwk": {
       "kty": "EC",
@@ -241,7 +241,7 @@ This subsection is informative. The following uses illustrative placeholder valu
   "iat": 1713340800,
   "nbf": 1713340800,
   "exp": 1713427200,
-  "vct": "https://rotavera.io/credentials/I2H2A",
+  "vct": "https://i2h2a.org/credentials/I2H2A",
   "cnf": {
     "jwk": {
       "kty": "EC",
@@ -261,7 +261,7 @@ This subsection is informative. The following uses illustrative placeholder valu
     "hashOfDelegatedBy",
     "hashOfParentCredential",
     "hashOfDelegationDepth",
-    "hashOfScopeMcpServers",
+    "hashOfScopeServices",
     "hashOfScopeTaskType",
     "hashOfAuthorization"
   ]
@@ -273,7 +273,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 ["salt1", "delegatedBy", "did:cheqd:testnet:example-holder"]
 ["salt2", "parentCredential", null]
 ["salt3", "delegationDepth", 0]
-["salt4", "scope.mcpServers", ["amazon-mcp"]]
+["salt4", "scope.services", ["amazon-mcp"]]
 ["salt5", "scope.taskType", "product_search"]
 ["salt6", "authorization", {}]
 ```
@@ -306,7 +306,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 
 2. **Verify issuer signature.** Resolve the issuer DID from `iss` claim. Obtain the verification key identified by `kid`. Verify the ES256 signature on the issuer-signed JWT. If this fails, return `valid = false`, error `issuer_signature_invalid`.
 
-3. **Verify `vct`.** The `vct` claim MUST equal `"https://rotavera.io/credentials/I2H2A"`. Otherwise return `valid = false`, error `invalid_vct`.
+3. **Verify `vct`.** The `vct` claim MUST equal `"https://i2h2a.org/credentials/I2H2A"`. Otherwise return `valid = false`, error `invalid_vct`.
 
 4. **Verify disclosures.** For each disclosure, compute `sha-256(disclosure)` and verify it appears in the `_sd` array of the issuer JWT payload. Discard any disclosure whose hash is not present. Reconstruct the disclosed claims.
 
@@ -322,7 +322,7 @@ This subsection is informative. The following uses illustrative placeholder valu
 
 8. **Check revocation status.** Evaluate `credentialStatus` per Section 5 (Appendix A equivalent). If revoked, return `valid = false`, error `credential_revoked`.
 
-9. **Validate delegation scope.** Verify the requested operation is permitted by the disclosed `scope.mcpServers` and `scope.taskType` values. If not, return `valid = false`, error `scope_violation`.
+9. **Validate delegation scope.** Verify the requested operation is permitted by the disclosed `scope.services` and `scope.taskType` values. If not, return `valid = false`, error `scope_violation`.
 
 10. **Check delegation depth.** `delegationDepth` MUST equal `0` for V1. Otherwise return `valid = false`, error `invalid_delegation_depth`.
 
@@ -346,7 +346,7 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
   issuerKey := resolveVerificationKey(issuerDID, kid)
   if !verifyES256(issuerJWT, issuerKey) then return (false, ["issuer_signature_invalid"])
 
-  if getClaim(issuerJWT, "vct") != "https://rotavera.io/credentials/I2H2A" then return (false, ["invalid_vct"])
+  if getClaim(issuerJWT, "vct") != "https://i2h2a.org/credentials/I2H2A" then return (false, ["invalid_vct"])
 
   sdArray := getClaim(issuerJWT, "_sd")
   disclosedClaims := {}
@@ -373,7 +373,7 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
   if !bitstringStatusSaysActive(getClaim(issuerJWT, "credentialStatus"))
     then return (false, ["credential_revoked"])
 
-  if !scopePermits(requestContext, disclosedClaims["scope.mcpServers"], disclosedClaims["scope.taskType"])
+  if !scopePermits(requestContext, disclosedClaims["scope.services"], disclosedClaims["scope.taskType"])
     then return (false, ["scope_violation"])
 
   if disclosedClaims["delegationDepth"] != 0 then return (false, ["invalid_delegation_depth"])
@@ -393,13 +393,13 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
 | Issuer | Platform or human issuer; signs SD-JWT VC with P-256 key |
 | Human holder | Verified human; identified by `delegatedBy`; authorises delegation |
 | Agent | Holds SD-JWT VC and P-256 agent key; constructs SD-JWT+KB presentations |
-| Verifier | Validates SD-JWT+KB and enforces scope (e.g., MCP server shim) |
+| Verifier | Validates SD-JWT+KB and enforces scope (e.g., MCP shim, UCP REST verifier, A2A endpoint, or embedded runtime) |
 
 #### 5.2 Flow (normative narrative)
 
 1. **Delegation setup:** The platform issuer generates a P-256 agent keypair for the session. The issuer constructs an I2H2A SD-JWT VC with the agent's P-256 public key in `cnf.jwk` and the human holder's DID in the `delegatedBy` disclosure. The issuer signs the SD-JWT VC with the issuer's P-256 key. The agent receives the SD-JWT VC and its private key through a secure server-side channel.
 
-2. **Session initiation:** The verifier (MCP server shim) issues a `nonce` challenge. The agent selects which disclosures to include (at minimum `scope.mcpServers`, `scope.taskType`, `delegatedBy`, `delegationDepth`, `parentCredential`). The agent constructs a KB-JWT binding the presentation to the verifier `aud` and `nonce`, signs it with the agent's P-256 private key, and appends it to form the SD-JWT+KB string.
+2. **Session initiation:** The verifier (for example MCP shim, UCP REST verifier, A2A endpoint, or embedded runtime) issues a `nonce` challenge. The agent selects which disclosures to include (at minimum `scope.services`, `scope.taskType`, `delegatedBy`, `delegationDepth`, `parentCredential`). The agent constructs a KB-JWT binding the presentation to the verifier `aud` and `nonce`, signs it with the agent's P-256 private key, and appends it to form the SD-JWT+KB string.
 
 3. **Verification:** The verifier runs the algorithm in Section 4. On success, the verifier executes the requested operation within scope.
 
@@ -411,7 +411,7 @@ function verifyI2H2A(PRESENTATION, verifierAud, verifierNonce) -> (valid: bool, 
 sequenceDiagram
   participant I as Issuer (P-256)
   participant A as Agent (did:key P-256)
-  participant V as Verifier (MCP shim)
+  participant V as Verifier (transport-specific)
 
   I->>A: SD-JWT VC (ES256, cnf.jwk = agent P-256 pubkey)
   V->>A: Nonce challenge
@@ -432,7 +432,7 @@ sequenceDiagram
 
 #### 6.2 Selective disclosure discipline
 
-- Verifiers MUST NOT accept presentations that omit `scope.mcpServers` or `scope.taskType` disclosures — these are required for scope enforcement.
+- Verifiers MUST NOT accept presentations that omit `scope.services` or `scope.taskType` disclosures — these are required for scope enforcement.
 - The `authorization` disclosure MUST NOT be required by generic I2H2A verifiers. Platform-specific verifiers MAY require it.
 - Issuers MUST use cryptographically random salts (≥128 bits) for each disclosure.
 
@@ -468,12 +468,12 @@ I2H2A MAY be issued by any platform capable of producing RFC 9901-conformant SD-
 
 #### 7.3 Mastercard Verifiable Intent alignment
 
-I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorithm and format profile. Future V2 implementations MAY present both an I2H2A delegation credential and an MC VI payment credential in a single W3C VP to an MCP server, enabling cryptographically verified delegation and payment intent in one presentation.
+I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorithm and format profile. Future V2 implementations MAY present both an I2H2A delegation credential and an MC VI payment credential in a single W3C VP to a verifier endpoint, enabling cryptographically verified delegation and payment intent in one presentation.
 
-#### 7.4 MCP integration
+#### 7.4 Transport integration
 
-- MCP server shims SHOULD accept SD-JWT+KB presentations via OAuth 2.1–aligned bearer token exchange at session initiation.
-- MCP server shim implementations MUST verify the SD-JWT+KB locally: resolve the issuer DID, verify the ES256 issuer signature, verify disclosure hashes, verify the KB-JWT holder binding, and enforce scope claims. No external credential verification API is required.
+- Verifier implementations across MCP, UCP REST, A2A, and embedded transports SHOULD accept SD-JWT+KB presentations at session initiation using transport-appropriate metadata or headers.
+- Verifier implementations MUST verify the SD-JWT+KB locally: resolve the issuer DID, verify the ES256 issuer signature, verify disclosure hashes, verify the KB-JWT holder binding, and enforce scope claims. No external credential verification API is required.
 
 ---
 
