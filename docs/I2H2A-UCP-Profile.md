@@ -30,10 +30,12 @@ This profile applies across UCP transports (REST, MCP, A2A, Embedded).
 Implementations using this profile MUST require an I2H2A SD-JWT VC that conforms to I2H2A v0.2, including:
 
 - `vct` = `https://i2h2a.org/credentials/I2H2A`
+- Issuer JWT `typ` = `dc+sd-jwt` for UCP profile conformance. During migration, verifiers SHOULD accept both `dc+sd-jwt` and legacy `vc+sd-jwt`.
 - `iss`, `sub`, `iat`, `nbf` (if present), `exp`
 - `cnf.jwk` with `kty=EC`, `crv=P-256`, `x`, `y`
 - `_sd_alg` = `sha-256`
-- `credentialStatus` (`type=BitstringStatusListEntry`, `statusListIndex`, `statusListCredential`)
+- `credentialStatus` (`type=BitstringStatusListEntry`, required `statusPurpose`, `statusListIndex`, `statusListCredential`)
+- `statusListIndex` MUST be a base-10 string per W3C Bitstring Status List. For compatibility, integer inputs MAY be accepted if normalized to equivalent base-10 string before validation.
 - KB-JWT with `aud`, `nonce`, `sd_hash`, signed by key corresponding to `cnf.jwk`
 
 Verifiers MUST enforce:
