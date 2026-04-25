@@ -8,3 +8,5 @@ Open specification for human-to-agent delegation using Verifiable Credentials.
 - [Middleware / SDK](https://github.com/UltraQuamfy/I2H2A-middleware)
 
 MIT License
+
+Contact: hello@i2h2a.org
