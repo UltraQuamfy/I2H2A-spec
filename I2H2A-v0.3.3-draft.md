@@ -1,0 +1,773 @@
+# I2H2A Specification v0.3.3 (Draft)
+
+**Issuer-to-Holder-to-Agent (I2H2A) Delegation Protocol**
+
+**Version:** 0.3.3-draft  
+**Date:** April 29, 2026  
+**Status:** Draft Specification
+
+---
+
+## Abstract
+
+This specification defines the **Issuer-to-Holder-to-Agent (I2H2A)** protocol, a cryptographic delegation framework enabling humans to authorize autonomous agents to act on their behalf. I2H2A provides verifiable, revocable, scope-constrained delegation credentials using W3C Verifiable Credentials 2.0 and Decentralized Identifiers (DIDs).
+
+The protocol is **transport-agnostic**, **DID-method-agnostic**, and **domain-agnostic**, supporting any use case requiring delegated authority: file access, API authorization, service management, resource operations, and beyond.
+
+---
+
+## 1. Introduction
+
+### 1.1 Problem Statement
+
+Autonomous agents increasingly act on behalf of humans across digital systems. However, no standardized mechanism exists for:
+
+- Cryptographically proving an agent is authorized by a specific human
+- Constraining agent authority with verifiable scope limitations  
+- Revoking agent authority in real-time
+- **Auditability** — Verifiable evidence tying human-authorized scope to agent action, credential lifecycle, and revocation (without mandating agent-to-agent delegation at protocol level)
+- Enabling offline verification without centralized infrastructure
+
+Existing solutions (API keys, OAuth tokens, session credentials) are insufficient:
+- **Bearer tokens** are vulnerable to theft and replay attacks
+- **Centralized validation** creates single points of failure
+- **No cryptographic binding** between human and agent
+- **Limited revocation** mechanisms (TTL-based, not real-time)
+- **Platform lock-in** prevents cross-domain delegation
+
+### 1.2 Motivating Use Cases
+
+**Use Case 1: Document Access Delegation**  
+Alice authorizes her AI research assistant to read and summarize academic papers from her university document repository. The agent operates autonomously, accessing papers as needed without requiring Alice's real-time approval for each document.
+
+**Use Case 2: API Authorization**  
+Bob delegates his calendar API access to an automation agent that schedules meetings based on email requests. The agent can create calendar entries within specified time windows but cannot delete existing events.
+
+**Use Case 3: Service Subscription Management**  
+Carol authorizes an agent to manage her streaming service subscriptions, allowing it to pause, resume, or modify plans within a monthly budget constraint.
+
+**Use Case 4: Cloud Resource Operations**  
+David delegates cloud storage management to a backup agent that can write files to designated folders but cannot delete or modify existing archives.
+
+### 1.3 Design Goals
+
+1. **Cryptographic Verification** - Mathematical proof of delegation, not institutional attestation alone
+2. **Revocability** - Real-time credential revocation without requiring credential expiry
+3. **Scope Constraints** - Verifiable limits on agent authority
+4. **Auditability** — Verifiable issuance, scope enforcement, verification, and revocation records sufficient for oversight, compliance, and dispute review (sub-delegation between agents is optional future work; see **§7**)
+5. **Offline Verification** - No dependency on issuer availability for validation
+6. **Interoperability** - Works across organizational and technical boundaries
+7. **DID Method Agnostic** � Normative illustrative material in this specification uses **`did:web`**, **`did:key`**, and **`did:cheqd`** only. Deployments MAY use any DID method compliant with **[DID-CORE]** and listed in the **W3C DID Method Registry** (or interoperable equivalents); no other DID methods appear as named examples herein.
+8. **Transport Agnostic** - Independent of presentation protocol (OID4VP, DIDComm, HTTP, etc.)
+9. **Domain Agnostic** - Applicable to any delegation scenario
+
+---
+
+## 2. Architecture Overview
+
+### 2.1 Actors
+
+**Issuer**  
+Entity that issues delegation credentials after verifying human authorization. Issues credentials as W3C Verifiable Credentials signed with the issuer's DID. Maintains status lists for revocation.
+
+**Holder (Human)**  
+Individual who authorizes an agent to act on their behalf. Authenticates to the issuer to request credential issuance. Controls revocation of issued credentials.
+
+**Agent (Subject)**  
+Autonomous system authorized to perform actions within defined scope. Presents verifiable presentations to verifiers. May be identified by `did:key`, `did:web`, or other DID methods.
+
+**Verifier (Service Provider)**  
+Entity that validates agent credentials before granting access. Verifies issuer signature, holder binding, scope constraints, and revocation status. Examples: API endpoints, file servers, service platforms.
+
+### 2.2 Protocol Flow
+
+```
+1. Holder authenticates to Issuer
+2. Holder requests delegation credential for Agent
+3. Issuer verifies Holder identity and authorization
+4. Issuer creates Verifiable Credential (VC):
+   - credentialSubject.id = Agent DID
+   - Scope and constraints defined
+   - Signed by Issuer DID
+   - Status list reference included
+5. Credential delivered to Holder's wallet or storage
+6. Agent retrieves credential (via wallet API, secure storage, etc.)
+7. Agent presents Verifiable Presentation (VP) to Verifier:
+   - Contains the VC
+   - Signed by Agent DID (KB-JWT binding)
+   - Includes challenge/nonce from Verifier
+8. Verifier validates:
+   - Issuer signature on VC
+   - Agent DID matches credentialSubject.id
+   - Credential not revoked (status list check)
+   - Scope permits requested action
+   - KB-JWT binds VP to Agent
+9. Access granted or denied based on validation
+```
+
+### 2.3 Credential Lifecycle
+
+**Issuance** → **Storage** → **Presentation** → **Verification** → **Revocation**
+
+- Credentials issued with validity period and scope
+- Holder controls credential storage and agent access
+- Agent presents credentials when accessing resources
+- Verifiers validate independently without issuer callback
+- Holder can revoke at any time via status list update
+
+---
+
+## 3. Credential Structure
+
+### 3.1 Format
+
+I2H2A credentials MUST use **SD-JWT** (Selective Disclosure JWT, RFC 9901) with **ES256** (ECDSA P-256) signatures.
+
+**Rationale:**
+- Selective disclosure enables privacy-preserving presentations
+- ES256 provides strong cryptographic security with broad library support
+- JWT structure is widely understood and interoperable
+- Compatible with W3C VC 2.0 data model
+
+### 3.2 Required Fields
+
+All I2H2A credentials MUST include:
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://i2h2a.org/contexts/v1"
+  ],
+  "type": ["VerifiableCredential", "I2H2ADelegationCredential"],
+  "issuer": "did:example:issuer123",
+  "validFrom": "2026-04-29T10:00:00Z",
+  "validUntil": "2027-04-29T10:00:00Z",
+  "credentialSubject": {
+    "id": "did:key:agent456",
+    "scope": ["action:read", "action:write"],
+    "constraints": {
+      "validFrom": "2026-04-29T10:00:00Z",
+      "validUntil": "2027-04-29T10:00:00Z"
+    }
+  },
+  "credentialStatus": {
+    "id": "https://example.com/status/list#94567",
+    "type": "BitstringStatusListEntry",
+    "statusListIndex": "94567",
+    "statusListCredential": "https://example.com/status/list"
+  }
+}
+```
+
+### 3.3 Field Definitions
+
+#### 3.3.1 Credential Subject
+
+**`id`** (REQUIRED)  
+DID of the agent being authorized. MUST match the DID used to sign the Verifiable Presentation.
+
+**`scope`** (REQUIRED)  
+Array of permitted actions. Vocabulary is domain-specific but SHOULD follow the pattern `action:operation` or `resource:type`.
+
+Examples:
+- `["action:read", "action:write"]`
+- `["api:calendar.create", "api:calendar.read"]`
+- `["file:read", "file:write"]`
+- `["service:pause", "service:resume"]`
+
+**`constraints`** (OPTIONAL)  
+Object containing additional limitations on agent authority.
+
+Common constraint fields:
+- `validFrom` / `validUntil` - Time boundaries for credential use
+- `maxOperations` - Maximum number of operations allowed
+- `resourceType` - Type of resource agent can access
+- `regionRestriction` - Geographic or network limitations
+
+Domain-specific constraints MAY be added as needed.
+
+#### 3.3.2 Credential Status
+
+I2H2A credentials MUST include revocation status using **BitstringStatusListEntry** (W3C Bitstring Status List v1.0).
+
+**`statusListCredential`**  
+URL of the status list credential containing revocation bits.
+
+**`statusListIndex`**  
+Index position of this credential's status bit in the list.
+
+Status list MAY be deployed on:
+- Public blockchains or other distributed anchors (implementations MUST follow **[StatusList]** and applicable security practices for the deployment)
+- IPFS or similar content-addressed storage
+- Centralized registries with cryptographic integrity
+
+#### 3.3.3 Optional Extensions
+
+**`resourceReference`** (OPTIONAL)  
+URI identifying the specific resource this credential authorizes access to.
+
+Examples:
+- `https://api.example.com/v1/documents/abc123`
+- `gs1:01:09506000134352` (GS1 Digital Link for products)
+- `did:example:resource789`
+
+**`parentCredential`** (OPTIONAL)  
+Structured reference linking to another credential when modeling lineage-related extensions. **`subjectAgent`** identifies the DID of **the agent that was `credentialSubject` of that parent credential** (the parent credential’s authorized agent)—not the human holder. (**Do not use** a property named **`holder`** in this object; it was ambiguous with the protocol’s Human **Holder** role.)
+
+Example:
+
+```json
+"parentCredential": {
+  "id": "did:example:issuer/credentials/abc123",
+  "issuer": "did:example:issuer",
+  "subjectAgent": "did:key:agent-a"
+}
+```
+
+Whether `parentCredential` is used—and any norms around it—is subject to Section 7 (currently an open placeholder only).
+
+---
+
+## 4. Complete Examples
+
+### 4.1 Example 1: File Access Delegation
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://i2h2a.org/contexts/v1"
+  ],
+  "type": ["VerifiableCredential", "I2H2ADelegationCredential"],
+  "issuer": "did:web:issuer.example.com",
+  "validFrom": "2026-04-29T10:00:00Z",
+  "validUntil": "2027-04-29T10:00:00Z",
+  "credentialSubject": {
+    "id": "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK",
+    "scope": ["file:read", "file:list"],
+    "constraints": {
+      "resourceType": "document",
+      "pathPrefix": "/research/papers/",
+      "maxFileSize": 10485760
+    }
+  },
+  "credentialStatus": {
+    "id": "https://status.example.com/list#12345",
+    "type": "BitstringStatusListEntry",
+    "statusListIndex": "12345",
+    "statusListCredential": "https://status.example.com/list"
+  }
+}
+```
+
+### 4.2 Example 2: API Authorization
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://i2h2a.org/contexts/v1"
+  ],
+  "type": ["VerifiableCredential", "I2H2ADelegationCredential"],
+  "issuer": "did:example:issuer456",
+  "validFrom": "2026-04-29T14:30:00Z",
+  "validUntil": "2026-05-29T14:30:00Z",
+  "credentialSubject": {
+    "id": "did:web:agent.automation.example",
+    "scope": ["api:calendar.create", "api:calendar.read"],
+    "constraints": {
+      "validFrom": "2026-04-29T14:30:00Z",
+      "validUntil": "2026-05-29T14:30:00Z",
+      "timeWindowStart": "09:00",
+      "timeWindowEnd": "17:00",
+      "daysOfWeek": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    }
+  },
+  "credentialStatus": {
+    "id": "did:example:global-status-registry#67890",
+    "type": "BitstringStatusListEntry",
+    "statusListIndex": "67890",
+    "statusListCredential": "did:example:global-status-registry"
+  }
+}
+```
+
+### 4.3 Example 3: Service Management
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://i2h2a.org/contexts/v1"
+  ],
+  "type": ["VerifiableCredential", "I2H2ADelegationCredential"],
+  "issuer": "did:key:z6Mkf5rGMoatrSj1f4CyvuHBeXJELe9RPdzo2PKHorYPRJGb",
+  "validFrom": "2026-04-29T08:00:00Z",
+  "validUntil": "2027-04-29T08:00:00Z",
+  "credentialSubject": {
+    "id": "did:key:z6MkhN7PBjWgSMQ2Cr9kF8PNhLK4UYvUNXN7FE67hzVKQgpF",
+    "scope": ["service:pause", "service:resume", "service:modify"],
+    "constraints": {
+      "serviceCategory": "streaming",
+      "maxMonthlySpend": 50.00,
+      "currency": "USD"
+    }
+  },
+  "credentialStatus": {
+    "id": "https://registry.example.com/revocation#11223",
+    "type": "BitstringStatusListEntry",
+    "statusListIndex": "11223",
+    "statusListCredential": "https://registry.example.com/revocation"
+  }
+}
+```
+
+---
+
+## 5. Presentation and Verification
+
+### 5.1 Verifiable Presentation Structure
+
+Agents MUST present credentials using **Verifiable Presentations** mapped to **W3C VC 2.0** semantics, but the **securing mechanism is SD-JWT+KB-JWT** (**[RFC9901]**, SD-JWT VC)—**not** Linked Data **`proof`** objects such as **`JsonWebSignature2020`** on the VP envelope.
+
+Representative VP payload (schema only; the wire format is compact SD-JWT+KB):
+
+```json
+{
+  "@context": ["https://www.w3.org/ns/credentials/v2"],
+  "type": ["VerifiablePresentation"],
+  "verifiableCredential": [
+    "<Issuer-signed SD-JWT VC (includes disclosures per RFC 9901)>"
+  ]
+}
+```
+
+**Secured as SD-JWT+KB** (compact notation):
+
+```
+<Issuer JWT for SD-JWT VC> ~ <Disclosure> * ~ <KB-JWT>
+```
+
+**KB-JWT** MUST contain:
+- **`nonce`**: verifier-provided challenge  
+- **`aud`**: verifier identifier  
+- **`iat`**: time of presentation  
+- **`sd_hash`**: hash binding to the issuer JWT and disclosures (**[RFC9901]**)
+
+**KB-JWT Requirements:**
+- KB-JWT MUST be signed by the private key corresponding to the DID in **`credentialSubject.id`** (and **`cnf.jwk`** when present in SD-JWT VC payloads)  
+- The **`nonce`** MUST match the challenge provided by the verifier  
+- Prevents replay attacks and binds the presentation to a specific verification session
+
+### 5.2 Verification Process
+
+Verifiers MUST perform the following checks in order:
+
+#### Step 1: Structural Validation
+- VP contains at least one VC
+- VC conforms to I2H2A schema
+- All required fields present
+
+#### Step 2: Signature Verification
+- Resolve issuer DID document
+- Verify SD-JWT issuer JWT signature (**ES256**) against the issuer **`kid`** / verification methods
+- Verify KB-JWT (**`typ`** **`kb+jwt`**, **ES256**) using the holder/agent key material (**`cnf.jwk`**, **`credentialSubject.id`**)
+
+#### Step 3: Holder Binding
+- Extract **`credentialSubject.id`** from disclosed VC payloads
+- MUST match: agent DID asserted in KB-JWT / key binding (**[RFC9901]** SD-JWT+KB semantics)
+- Proves the agent presenting the KB-JWT is the agent authorized by the VC
+
+#### Step 4: Challenge, Audience, and Binding (KB-JWT)
+- Verify KB-JWT **`nonce`** matches the verifier-issued challenge
+- Verify KB-JWT **`aud`** identifies this verifier/session as required
+- Verify **`sd_hash`** binds the KB-JWT to the issuer-signed SD-JWT and disclosures (**[RFC9901]**)
+- Prevents replay, incorrect audience substitution, and tampering with the presented credential material
+
+#### Step 5: Status Check
+- Fetch status list from `credentialStatus.statusListCredential`
+- Check bit at `credentialStatus.statusListIndex`
+- If bit = 1, credential is REVOKED (reject)
+- If bit = 0, credential is VALID (continue)
+
+#### Step 6: Temporal Validity
+- Current time MUST be >= VC **`validFrom`** ([VC-DATA-MODEL-2.0])
+- Current time MUST be < VC **`validUntil`** ([VC-DATA-MODEL-2.0])
+- If `constraints.validFrom` exists, current time MUST be >= that `constraints.validFrom`
+- If `constraints.validUntil` exists, current time MUST be < that `constraints.validUntil`
+
+#### Step 7: Scope Validation
+- Extract requested action from context (e.g., API endpoint, file operation)
+- Check if action is permitted by `scope` array
+- Check if action satisfies all `constraints`
+- If scope insufficient, DENY access
+
+All checks MUST pass for verification to succeed.
+
+---
+
+## 6. Revocation
+
+### 6.1 Status Lists
+
+I2H2A uses **Bitstring Status Lists** (W3C Bitstring Status List v1.0) for credential revocation.
+
+**Status List Structure:**
+```json
+{
+  "@context": ["https://www.w3.org/ns/credentials/v2"],
+  "type": ["VerifiableCredential", "BitstringStatusListCredential"],
+  "issuer": "did:example:issuer123",
+  "validFrom": "2026-04-29T00:00:00Z",
+  "credentialSubject": {
+    "type": "BitstringStatusList",
+    "statusPurpose": "revocation",
+    "encodedList": "H4sIAAAAAAAAA..." // Base64-encoded compressed bitstring
+  }
+}
+```
+
+**Bitstring Encoding:**
+- Each credential assigned a unique index
+- Bit value 0 = valid
+- Bit value 1 = revoked
+- List compressed with GZIP, Base64-encoded
+
+### 6.2 Revocation Process
+
+1. Holder requests revocation from issuer
+2. Issuer authenticates holder
+3. Issuer updates status list (flips bit at credential's index)
+4. Updated status list published to designated location
+5. Next verification check will detect revocation
+
+**Deployment Options:**
+- Blockchain ledgers (immutable, decentralized)
+- IPFS (content-addressed, distributed)
+- Centralized registries (performance, but single point of control)
+
+### 6.3 Revocation Granularity
+
+Issuers MAY implement:
+- **Immediate revocation** - Status list updated in real-time
+- **Batch revocation** - Status list updated periodically (e.g., hourly)
+- **Permanent revocation** - Bit flip is irreversible
+- **Temporary suspension** - Separate status list for suspension vs revocation
+
+---
+
+## 7. Agent-to-Agent Delegation
+
+### 7.1 Open Question
+
+Whether I2H2A should define a mechanism for agent-to-agent sub-delegation (H2A2A) is **undecided**.
+
+The base protocol specifies Holder-to-Agent delegation only. Agent-to-agent chains introduce significant complexity — chain verification, scope attenuation enforcement, and root-of-trust maintenance — and no confirmed use case has been established that requires this at the protocol level.
+
+This section is retained as a placeholder. H2A2A is **not part of v0.3** and will not be designed or built until a concrete use case justifies it.
+
+### 7.2 Potential Considerations (Informative Only)
+
+If H2A2A is pursued in a future version, the following constraints would likely apply:
+
+- Child credential scope must be a strict subset of the parent credential scope
+- The cryptographic root-of-trust must remain with the original issuer DID — parent agents must not sign child credentials
+- Chain verification would require recursive validation of all credentials back to the root
+- Revocation of a parent credential must cascade to invalidate all child credentials
+
+These are design notes only. Nothing in this section is normative.
+
+---
+
+## 8. Security Considerations
+
+### 8.1 Private Key Protection
+
+**Agent Private Keys:**
+- MUST be stored in secure environments (hardware security modules, secure enclaves, encrypted keystores)
+- SHOULD use key rotation mechanisms
+- MUST NOT be transmitted in plaintext
+
+**Issuer Private Keys:**
+- MUST use hardware security modules (HSMs) or equivalent
+- SHOULD implement multi-signature schemes for high-value issuers
+- MUST have key recovery procedures
+
+### 8.2 Replay Attack Prevention
+
+- VP signatures MUST include verifier-provided nonce/challenge
+- Nonces SHOULD be cryptographically random and single-use
+- Verifiers MUST reject VPs with missing or invalid challenges
+
+### 8.3 Scope Constraint Enforcement
+
+- Verifiers MUST NOT grant access beyond credential scope
+- Scope checks MUST be performed on every operation
+- Failed scope checks SHOULD be logged for audit
+
+### 8.4 Status List Integrity
+
+- Status lists SHOULD be deployed on tamper-evident infrastructure
+- Status list updates SHOULD be logged and auditable
+- Verifiers SHOULD cache status lists with appropriate TTL
+
+### 8.5 DID Resolution Security
+
+- DID resolution SHOULD use multiple resolvers for redundancy
+- DID documents SHOULD be verified against ledger/authoritative source
+- Verifiers MUST validate DID document signatures
+
+---
+
+## 9. Privacy Considerations
+
+### 9.1 Selective Disclosure
+
+I2H2A credentials use SD-JWT to enable selective disclosure:
+- Agents MAY disclose only required claims
+- Unnecessary personal information SHOULD NOT be included in credentials
+- Verifiers SHOULD request minimum necessary disclosures
+
+### 9.2 Correlation Resistance
+
+- Agents MAY use different DIDs per verifier to prevent correlation
+- Status list design SHOULD minimize linkability between credential checks
+- Issuers SHOULD avoid including unique identifiers that enable tracking
+
+### 9.3 Minimal Data Exposure
+
+- Credentials SHOULD contain only authorization data, not identity attributes
+- Personal information SHOULD be in separate credentials (e.g., eKYC) not mixed into delegation credentials
+
+---
+
+## 10. Interoperability
+
+### 10.1 DID Method Agnostic
+
+I2H2A credentials MUST work with any **W3C DID Method Registry**-compliant method. **Named illustrative methods in this specification are limited to:**
+
+- **`did:web`** — Web-based DID resolution and documents  
+- **`did:key`** — Self-contained cryptographic identifiers  
+- **`did:cheqd`** — Ledger-anchored DIDs per registered method rules  
+
+**Any W3C DID Method Registry-compliant method** (and interoperable equivalents) MAY be deployed; no additional DID methods are enumerated as exemplars in this revision.
+
+### 10.2 Transport Agnostic
+
+VP presentation MUST be independent of transport protocol:
+- **OID4VP** (OpenID for Verifiable Presentations)
+- **DIDComm** (Decentralized Identity Communication)
+- **HTTP/REST APIs**
+- **Message queues or event streams**
+- Any protocol supporting cryptographic message exchange
+
+### 10.3 Standards Alignment
+
+I2H2A aligns with:
+- **W3C Verifiable Credentials 2.0**
+- **W3C Decentralized Identifiers 1.0**
+- **W3C Bitstring Status List 1.0**
+- **RFC 9901** (SD-JWT / SD-JWT VC)
+- **RFC 7515** (JWS — SD-JWT signing)
+- **RFC 7517** (JWK — key shapes for disclosures and proofs)
+- **OpenID for Verifiable Presentations**
+
+**RFC 7518** (JSON Web Algorithms) is widely used alongside SD-JWT; see **§13.2** for citation as informative context for **`ES256`** interoperability.
+
+---
+
+## 11. Implementation Guidance
+
+### 11.1 Issuer Implementation
+
+Issuers MUST:
+1. Authenticate holders before credential issuance
+2. Generate credentials conforming to I2H2A schema
+3. Sign credentials with issuer DID private key (ES256)
+4. Maintain status lists for revocation
+5. Provide revocation endpoints for holders
+6. Publish DID documents with current public keys
+
+Issuers SHOULD:
+- Implement rate limiting to prevent abuse
+- Log all credential issuance and revocation events
+- Provide APIs for credential retrieval
+- Support multiple DID methods for flexibility
+
+### 11.2 Agent Implementation
+
+Agents MUST:
+1. Generate and securely store private keys
+2. Retrieve credentials from holder's wallet or secure storage
+3. Present VPs with KB-JWT binding
+4. Include verifier-provided **`nonce`** in the KB-JWT
+5. Respect credential scope constraints
+
+Agents SHOULD:
+- Use hardware-backed keystores where available
+- Implement credential caching with proper invalidation
+- Monitor credential expiry and request renewal
+- Support selective disclosure for privacy
+
+### 11.3 Verifier Implementation
+
+Verifiers MUST:
+1. Generate fresh nonces for each verification session
+2. Perform all verification steps in Section 5.2
+3. Reject invalid or revoked credentials
+4. Enforce scope constraints strictly
+5. Log verification attempts for audit
+
+Verifiers SHOULD:
+- Cache issuer DID documents with TTL
+- Cache status lists with appropriate refresh intervals
+- Implement rate limiting on verification endpoints
+- Provide clear error messages for failed verifications
+
+---
+
+## 12. Future Extensions
+
+### 12.1 Potential Enhancements
+
+**Agent Attestation:**  
+Mechanism for agents to prove their capabilities or security properties (e.g., "runs in secure enclave", "audited code")
+
+**Multi-Party Delegation:**  
+Credentials requiring signatures from multiple holders (e.g., joint account authorization)
+
+**Conditional Scope:**  
+Scope that changes based on external conditions (time of day, location, resource state)
+
+**Credential Aggregation:**  
+Protocols for agents to present multiple credentials in a single VP efficiently
+
+**Privacy-Preserving Revocation:**  
+Zero-knowledge proofs for revocation status to prevent linkability
+
+### 12.2 Standards Work
+
+I2H2A is positioned for standardization through:
+- **W3C Credentials Community Group**
+- **Decentralized Identity Foundation (DIF)**
+- **IETF OAuth Working Group** (complementary to OAuth agent extensions)
+- **OpenID Foundation** (integration with OID4VP)
+
+---
+
+## 13. References
+
+### 13.1 Normative References
+
+- **[VC-DATA-MODEL-2.0]** W3C Verifiable Credentials Data Model 2.0  
+  https://www.w3.org/TR/vc-data-model-2.0/
+
+- **[DID-CORE]** W3C Decentralized Identifiers (DIDs) v1.0  
+  https://www.w3.org/TR/did-core/
+
+- **[StatusList]** W3C Bitstring Status List v1.0  
+  https://www.w3.org/TR/vc-bitstring-status-list/
+
+- **[RFC9901]** SD-JWT: Selective Disclosure for JWTs  
+  https://datatracker.ietf.org/doc/html/rfc9901
+
+- **[RFC7515]** JSON Web Signature (JWS)  
+  https://datatracker.ietf.org/doc/html/rfc7515
+
+- **[RFC7517]** JSON Web Key (JWK)  
+  https://datatracker.ietf.org/doc/html/rfc7517
+
+### 13.2 Informative References
+
+- **[RFC7518]** JSON Web Algorithms (JWA) — cryptographic algorithm identifiers (**ES256**); companion to **[RFC7515]** / **[RFC7517]** implementations  
+  https://datatracker.ietf.org/doc/html/rfc7518
+
+- **[OID4VP]** OpenID for Verifiable Presentations  
+  https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
+
+- **[DIDComm]** DIDComm Messaging Specification  
+  https://identity.foundation/didcomm-messaging/spec/
+
+---
+
+## Appendix A: Terminology
+
+**Agent**  
+Autonomous software system authorized to act on behalf of a human holder.
+
+**Delegation**  
+Process of authorizing an agent to perform actions within defined scope.
+
+**Holder**  
+Human individual who controls credential issuance and revocation.
+
+**Issuer**  
+Trusted entity that issues delegation credentials after verifying holder authorization.
+
+**KB-JWT (Key Binding JWT)**  
+Cryptographic proof that binds a Verifiable Presentation to the presenter's private key.
+
+**Scope**  
+Set of permitted actions an agent is authorized to perform.
+
+**Status List**  
+Bitstring structure enabling efficient revocation checking.
+
+**Verifier**  
+Service provider that validates agent credentials before granting access.
+
+**VP (Verifiable Presentation)**  
+Signed package containing one or more Verifiable Credentials, proving presenter controls the subject DID.
+
+---
+
+## Appendix B: Full SD-JWT Example
+
+```
+Issuer JWT (signed with issuer DID private key):
+eyJhbGciOiJFUzI1NiIsInR5cCI6InZjK3NkLWp3dCIsImtpZCI6ImRpZDpleGFtcGxlOmlzc3VlcjEyMyNrZXktMSJ9.eyJfc2QiOlsiYWJjMTIzIiwiZGVmNDU2Il0sImlzcyI6ImRpZDpleGFtcGxlOmlzc3VlcjEyMyIsImlhdCI6MTY1MDAwMDAwMCwiZXhwIjoxNjgxNTM2MDAwLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiLCJodHRwczovL2kyaDJhLm9yZy9jb250ZXh0cy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiSTJIMkFEZWxlZ2F0aW9uQ3JlZGVudGlhbCJdLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6ImRpZDprZXk6ejZNa2hhWGdCWkR2b3REa0w1MjU3ZmFpenRpR2lDMlF0S0xHcGJubkVHdGEyZG9LIiwic2NvcGUiOlsiZmlsZTpyZWFkIiwiZmlsZTpsaXN0Il0sImNvbnN0cmFpbnRzIjp7InJlc291cmNlVHlwZSI6ImRvY3VtZW50IiwicGF0aFByZWZpeCI6Ii9yZXNlYXJjaC9wYXBlcnMvIn19LCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiaHR0cHM6Ly9zdGF0dXMuZXhhbXBsZS5jb20vbGlzdCMxMjM0NSIsInR5cGUiOiJCaXRzdHJpbmdTdGF0dXNMaXN0RW50cnkiLCJzdGF0dXNMaXN0SW5kZXgiOiIxMjM0NSIsInN0YXR1c0xpc3RDcmVkZW50aWFsIjoiaHR0cHM6Ly9zdGF0dXMuZXhhbXBsZS5jb20vbGlzdCJ9fX0.signature-here
+
+Disclosures (Base64-encoded):
+WyJzYWx0MSIsICJyZXNvdXJjZVR5cGUiLCAiZG9jdW1lbnQiXQ
+WyJzYWx0MiIsICJwYXRoUHJlZml4IiwgIi9yZXNlYXJjaC9wYXBlcnMvIl0
+
+Holder Binding JWT (signed with agent DID private key):
+eyJhbGciOiJFUzI1NiIsInR5cCI6ImtiK2p3dCIsImtpZCI6ImRpZDprZXk6ejZNa2hhWGdCWkR2b3REa0w1MjU3ZmFpenRpR2lDMlF0S0xHcGJubkVHdGEyZG9LI2tleS0xIn0.eyJub25jZSI6Im5vbmNlLWZyb20tdmVyaWZpZXItYWJjMTIzIiwiaWF0IjoxNjUwMDEwMDAwLCJhdWQiOiJodHRwczovL3ZlcmlmaWVyLmV4YW1wbGUuY29tIiwic2RfaGFzaCI6Imhhc2gtb2YtaXNzdWVyLWp3dCJ9.holder-binding-signature
+
+Complete SD-JWT:
+<Issuer JWT>~<Disclosure1>~<Disclosure2>~<Holder Binding JWT>
+```
+
+*Informative:* JSON-shaped credentials in **§3**–**§4** use **`validFrom`** / **`validUntil`** on the VC envelope per **[VC-DATA-MODEL-2.0]**. The compact JWT material above is illustrative; decoded SD-JWT VC payloads MUST be interpreted together with **[RFC9901]** and SHOULD surface validity intervals consistently with those JSON examples.
+
+---
+
+**End of Specification**
+
+---
+
+## Document Change Log
+
+**v0.3.3-draft (April 29, 2026)**
+- �1.3 design goal #4 reframed as Auditability; �1.1 problem bullet aligned; �7 remains open placeholder for any future H2A2A work
+- v0.3-draft change-log bullets neutralized (no vendor brands or personal names)
+- �4.2 JSON issuer value corrected to did:example:issuer456
+- Removed did:ion from all prose, lists, and examples; approved named illustrative DID methods are did:web, did:key, and did:cheqd, plus W3C DID Method Registry catch-all
+- Replaced issuanceDate / expirationDate with validFrom / validUntil throughout (W3C VC 2.0 alignment)
+- Revised �5.1 VP / KB-JWT framing; removed JsonWebSignature2020 proof example; KB-JWT nonce, aud, sd_hash obligations reflected in �5.2
+- Moved RFC 7518 (JWA) to �13.2 informative references; RFC 7515/7517 remain normative
+
+**v0.2 (Previous Draft)**
+- Initial draft with e-commerce focus
+- MCP transport coupling
+- Network-specific illustrative examples only
+
+---
+
+This specification defines ONLY the cryptographic delegation envelope.  
+Intelligence layers, transport protocols, and domain applications are implementation details.
+
+
+

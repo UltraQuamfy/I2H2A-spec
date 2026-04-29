@@ -13,3 +13,5 @@ Open specification for human-to-agent delegation using Verifiable Credentials.
 MIT License
 
 Contact: hello@i2h2a.org
+
+

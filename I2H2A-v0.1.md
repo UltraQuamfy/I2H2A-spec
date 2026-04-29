@@ -1,4 +1,4 @@
-> **Archived — superseded by subsequent I2H2A drafts.** Prefer **[I2H2A-v0.3.2-draft.md](./I2H2A-v0.3.2-draft.md)** for the current protocol narrative; snapshots **[v0.3.1](./I2H2A-v0.3.1-draft.md)** and **[v0.3](./I2H2A-v0.3-draft.md)** remain for lineage; **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** defines the interoperable SD-JWT VC byte profile. Retained for historical reference only — do not implement.
+> **Archived — superseded by subsequent I2H2A drafts.** Prefer **[I2H2A-v0.3.3-draft.md](./I2H2A-v0.3.3-draft.md)** for the current protocol narrative; snapshots **[v0.3.1](./I2H2A-v0.3.1-draft.md)** and **[v0.3](./I2H2A-v0.3-draft.md)** remain for lineage; **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** defines the interoperable SD-JWT VC byte profile. Retained for historical reference only — do not implement.
 # I2H2A Specification v0.1
 
 ## Issuer to Holder to Agent Delegation Credential
@@ -7,7 +7,7 @@
 **Status:** Draft  
 **Date:** 2026-04-12
 
-> **⚠ Superseded.** This is I2H2A v0.1 — retained for reference only. Use **[I2H2A-v0.3.2-draft.md](./I2H2A-v0.3.2-draft.md)** for current protocol drafting (with **[v0.3.1](./I2H2A-v0.3.1-draft.md)** / **[v0.3](./I2H2A-v0.3-draft.md)** snapshots); use **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** for the SD-JWT VC (RFC 9901), ES256/P-256, and field visibility map aligned with tooling and **`@i2h2a/verification-sdk`**. Do not implement v0.1 for new deployments.
+> **⚠ Superseded.** This is I2H2A v0.1 — retained for reference only. Use **[I2H2A-v0.3.3-draft.md](./I2H2A-v0.3.3-draft.md)** for current protocol drafting (with **[v0.3.1](./I2H2A-v0.3.1-draft.md)** / **[v0.3](./I2H2A-v0.3-draft.md)** snapshots); use **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** for the SD-JWT VC (RFC 9901), ES256/P-256, and field visibility map aligned with tooling and **`@i2h2a/verification-sdk`**. Do not implement v0.1 for new deployments.
 
 ---
 
@@ -520,3 +520,4 @@ function statusListSaysActive(S) -> bool
 ---
 
 *End of I2H2A Specification v0.1*
+
