@@ -1,8 +1,8 @@
-# I2H2A Specification v0.3 (Draft)
+# I2H2A Specification v0.3.2 (Draft)
 
 **Issuer-to-Holder-to-Agent (I2H2A) Delegation Protocol**
 
-**Version:** 0.3-draft  
+**Version:** 0.3.2-draft  
 **Date:** April 29, 2026  
 **Status:** Draft Specification
 
@@ -198,7 +198,7 @@ URL of the status list credential containing revocation bits.
 Index position of this credential's status bit in the list.
 
 Status list MAY be deployed on:
-- Blockchain ledgers (cheqd, Ethereum, etc.)
+- Public blockchains or other distributed anchors (implementations MUST follow **[StatusList]** and applicable security practices for the deployment)
 - IPFS or similar content-addressed storage
 - Centralized registries with cryptographic integrity
 
@@ -213,7 +213,19 @@ Examples:
 - `did:example:resource789`
 
 **`parentCredential`** (OPTIONAL)  
-Reference to parent credential in H2A2A delegation chains (see Section 7).
+Structured reference linking to another credential when modeling lineage-related extensions. **`subjectAgent`** identifies the DID of **the agent that was `credentialSubject` of that parent credential** (the parent credential’s authorized agent)—not the human holder. (**Do not use** a property named **`holder`** in this object; it was ambiguous with the protocol’s Human **Holder** role.)
+
+Example:
+
+```json
+"parentCredential": {
+  "id": "did:example:issuer/credentials/abc123",
+  "issuer": "did:example:issuer",
+  "subjectAgent": "did:key:agent-a"
+}
+```
+
+Whether `parentCredential` is used—and any norms around it—is subject to Section 7 (currently an open placeholder only).
 
 ---
 
@@ -273,10 +285,10 @@ Reference to parent credential in H2A2A delegation chains (see Section 7).
     }
   },
   "credentialStatus": {
-    "id": "did:cheqd:testnet:status-list#67890",
+    "id": "did:example:global-status-registry#67890",
     "type": "BitstringStatusListEntry",
     "statusListIndex": "67890",
-    "statusListCredential": "did:cheqd:testnet:status-list"
+    "statusListCredential": "did:example:global-status-registry"
   }
 }
 ```
@@ -439,82 +451,26 @@ Issuers MAY implement:
 
 ---
 
-## 7. Agent-to-Agent Delegation (H2A2A)
+## 7. Agent-to-Agent Delegation
 
-### 7.1 Overview
+### 7.1 Open Question
 
-**H2A2A (Holder-to-Agent-to-Agent)** enables authorized agents to sub-delegate authority to other agents, creating verifiable delegation chains.
+Whether I2H2A should define a mechanism for agent-to-agent sub-delegation (H2A2A) is **undecided**.
 
-**Use Case:**  
-Alice authorizes Agent-A to manage her cloud storage. Agent-A delegates backup operations to Agent-B (specialized backup service). Agent-B can prove its authority traces back to Alice.
+The base protocol specifies Holder-to-Agent delegation only. Agent-to-agent chains introduce significant complexity — chain verification, scope attenuation enforcement, and root-of-trust maintenance — and no confirmed use case has been established that requires this at the protocol level.
 
-### 7.2 Chain Structure
+This section is retained as a placeholder. H2A2A is **not part of v0.3** and will not be designed or built until a concrete use case justifies it.
 
-```
-Holder (Alice)
-  |
-  ├─ Issues I2H2A Credential-1
-  |     credentialSubject.id = Agent-A DID
-  |     scope = ["storage:read", "storage:write"]
-  |
-  └─ Agent-A receives Credential-1
-       |
-       ├─ Issues I2H2A Credential-2  
-       |     credentialSubject.id = Agent-B DID
-       |     scope = ["storage:write"]  // subset of Credential-1
-       |     parentCredential = Credential-1 reference
-       |
-       └─ Agent-B receives Credential-2
-```
+### 7.2 Potential Considerations (Informative Only)
 
-### 7.3 Parent Credential Reference
+If H2A2A is pursued in a future version, the following constraints would likely apply:
 
-Child credentials MUST include `parentCredential` field:
+- Child credential scope must be a strict subset of the parent credential scope
+- The cryptographic root-of-trust must remain with the original issuer DID — parent agents must not sign child credentials
+- Chain verification would require recursive validation of all credentials back to the root
+- Revocation of a parent credential must cascade to invalidate all child credentials
 
-```json
-{
-  "credentialSubject": {
-    "id": "did:key:agent-b-xyz",
-    "scope": ["storage:write"],
-    "parentCredential": {
-      "id": "did:example:issuer/credentials/abc123",
-      "issuer": "did:example:issuer",
-      "holder": "did:key:agent-a"
-    }
-  }
-}
-```
-
-### 7.4 Critical Security Constraint
-
-**ROOT-OF-TRUST INVARIANT:**
-
-ALL credentials in a delegation chain (including H2A2A child credentials) MUST be signed by the original issuer DID, never by a parent agent's DID.
-
-**Why:**  
-If Agent-A could sign credentials, it could forge arbitrary delegations beyond its authorized scope. The issuer remains the cryptographic root of trust.
-
-**Implementation:**  
-- Agent-A requests child credential from issuer
-- Agent-A proves it holds valid parent credential
-- Agent-A specifies sub-delegation scope (must be subset of parent scope)
-- Issuer validates Agent-A's authority
-- Issuer issues new credential signed by issuer DID
-- Child credential references parent via `parentCredential` field
-
-### 7.5 Verification of Chains
-
-Verifiers MUST validate entire chain:
-
-1. Verify leaf credential (Agent-B's credential)
-2. Extract `parentCredential` reference
-3. Fetch and verify parent credential (Agent-A's credential)
-4. Continue recursively until root credential (no `parentCredential`)
-5. All credentials must:
-   - Be signed by same issuer
-   - Not be revoked
-   - Have valid temporal constraints
-   - Have scope subsumption (child scope ⊆ parent scope)
+These are design notes only. Nothing in this section is normative.
 
 ---
 
@@ -588,7 +544,7 @@ I2H2A credentials MUST work with any DID method:
 - `did:web` - Web-based DIDs
 - `did:key` - Cryptographic key DIDs
 - `did:ion` - Bitcoin-anchored DIDs
-- `did:cheqd` - cheqd blockchain DIDs
+- `did:cheqd` — DIDs anchored per that method’s registered rules
 - `did:ethr` - Ethereum DIDs
 - Any W3C DID-compliant method
 
@@ -780,10 +736,19 @@ Complete SD-JWT:
 
 ## Document Change Log
 
+**v0.3.2-draft (April 29, 2026)**
+- Illustrative JSON revocation links use **`did:example`**-style status URIs (no ledger-specific testnet or network endpoint DIDs in code samples); **`did:cheqd`** remains only where DID methods are named in prose lists (**§1.3**, **§10.1**) and catalog history entries
+- **§3.3.2** status-list deployment text aligned with **[StatusList]** framing (generic distributed anchors rather than naming particular networks for deployment); **§10.1** `did:cheqd` interoperability line uses method-registry-neutral wording
+- **`I2H2A-v0.2-draft`** informative appendix line de-vendored in the published snapshot bundled with this release
+
+**v0.3.1-draft (April 29, 2026)**
+- Reframed Section 7 (H2A2A) as an open question — not part of v0.3, no normative content
+- Removed parentCredential `holder` field ambiguity — renamed to `subjectAgent`
+
 **v0.3-draft (April 29, 2026)**
 - Removed all e-commerce-specific examples and terminology
 - Removed transport coupling (MCP references)
-- Removed DID method bias (cheqd-only examples)
+- Removed DID method bias (single-network examples only)
 - Added diverse use case examples (file access, API auth, service mgmt, resource ops)
 - Added DID method diversity (did:example, did:web, did:key, did:ion, did:cheqd)
 - Abstracted vocabulary (resource, action, service instead of product, purchase, merchant)
@@ -795,7 +760,7 @@ Complete SD-JWT:
 **v0.2 (Previous Draft)**
 - Initial draft with e-commerce focus
 - MCP transport coupling
-- cheqd-specific examples
+- Network-specific illustrative examples only
 
 ---
 

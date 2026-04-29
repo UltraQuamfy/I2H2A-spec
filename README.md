@@ -8,7 +8,7 @@ Implementers who issue or verify delegated agent access — wallet vendors, iden
 
 ## Current versions
 
-The latest specification draft is **[I2H2A-v0.3.1-draft.md](./I2H2A-v0.3.1-draft.md)** — protocol overview (transport‑, DID‑, and domain‑agnostic delegation), credential semantics, VP/KB‑JWT flows, Bitstring revocation, and iterative narrative (agent-to-agent delegation is an **open placeholder** in §7). The preceding snapshot remains **[I2H2A-v0.3-draft.md](./I2H2A-v0.3-draft.md)**.
+The latest specification draft is **[I2H2A-v0.3.2-draft.md](./I2H2A-v0.3.2-draft.md)** — same protocol narrative as **[v0.3.1](./I2H2A-v0.3.1-draft.md)** (§7/H2A2A/`subjectAgent` clarifications), plus illustrative **DID/example** posture for JSON (**§4**, **`[StatusList]`** wording in **§3.3.2**) per W3C-style interoperability policy. Earlier snapshots remain **[v0.3.1](./I2H2A-v0.3.1-draft.md)** and **[v0.3](./I2H2A-v0.3-draft.md)**.
 
 The **concrete SD‑JWT VC profile** used by **`examples/`**, the JSON‑LD context, the **[UCP integration profile](./docs/I2H2A-UCP-Profile.md)**, and the reference **[`@i2h2a/verification-sdk`](https://github.com/i2h2a-org/I2H2A-middleware)** verifier remains **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** (MCVI‑aligned byte layout, field visibility map, unchanged).
 
@@ -16,7 +16,7 @@ Historical: **[I2H2A-v0.1.md](./I2H2A-v0.1.md)** — superseded; retained for re
 
 ## Format
 
-**v0.3.1 draft** is the current iteration of the protocol document; **v0.3 draft** is kept as the prior snapshot.
+**v0.3.2 draft** is the active protocol artifact; intermediate snapshots **v0.3.1** and **v0.3** are unchanged for archival comparison.
 
 **v0.3.x** material describes delegation at the VC / protocol layer (including SD‑JWT and KB‑JWT requirements in prose).
 
@@ -35,7 +35,7 @@ Historical: **[I2H2A-v0.1.md](./I2H2A-v0.1.md)** — superseded; retained for re
 ## Chain models
 
 - **H2A** — Issuer → Holder → Agent → Verifier. Terminal delegation (`delegationDepth: 0`). Current V1 scope.
-- **H2A2A** — agent-to-agent sub-delegation is **undecided** in the v0.3.1 protocol draft (see §7 placeholder); not required for baseline verification. The **v0.2** SD‑JWT profile still models **H2A** only for interoperable middleware/examples.
+- **H2A2A** — agent-to-agent sub-delegation is **undecided** in the v0.3.x protocol drafts (see §7 placeholder from **v0.3.1** onward); not required for baseline verification. The **v0.2** SD‑JWT profile still models **H2A** only for interoperable middleware/examples.
 
 ## Root-of-trust invariant
 

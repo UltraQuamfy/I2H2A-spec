@@ -110,4 +110,4 @@ These terms are defined by RFC 9901 and used in I2H2A credentials. They are not 
 
 ## Algorithm
 
-The **SD-JWT VC profile** (**[v0.2 draft](./I2H2A-v0.2-draft.md)**) mandates **ES256 / P-256** for issuer JWT and KB-JWT signatures. **[v0.3.1](./I2H2A-v0.3.1-draft.md)** (**[v0.3](./I2H2A-v0.3-draft.md)** snapshot) specifies SD-JWT / ES256 at the protocol level. v0.1’s EdDSA profile is superseded by ES256/P-256 per those drafts.
+The **SD-JWT VC profile** (**[v0.2 draft](./I2H2A-v0.2-draft.md)**) mandates **ES256 / P-256** for issuer JWT and KB-JWT signatures. **[v0.3.2](./I2H2A-v0.3.2-draft.md)** (with snapshots **[v0.3.1](./I2H2A-v0.3.1-draft.md)** / **[v0.3](./I2H2A-v0.3-draft.md)**) specifies SD-JWT / ES256 at the protocol level. v0.1’s EdDSA profile is superseded by ES256/P-256 per those drafts.

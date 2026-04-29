@@ -198,7 +198,7 @@ URL of the status list credential containing revocation bits.
 Index position of this credential's status bit in the list.
 
 Status list MAY be deployed on:
-- Public blockchains or other distributed anchors (implementations MUST follow **[StatusList]** and applicable security practices for the deployment)
+- Blockchain ledgers (cheqd, Ethereum, etc.)
 - IPFS or similar content-addressed storage
 - Centralized registries with cryptographic integrity
 
@@ -285,10 +285,10 @@ Whether `parentCredential` is used—and any norms around it—is subject to Sec
     }
   },
   "credentialStatus": {
-    "id": "did:example:global-status-registry#67890",
+    "id": "did:cheqd:testnet:status-list#67890",
     "type": "BitstringStatusListEntry",
     "statusListIndex": "67890",
-    "statusListCredential": "did:example:global-status-registry"
+    "statusListCredential": "did:cheqd:testnet:status-list"
   }
 }
 ```
@@ -544,7 +544,7 @@ I2H2A credentials MUST work with any DID method:
 - `did:web` - Web-based DIDs
 - `did:key` - Cryptographic key DIDs
 - `did:ion` - Bitcoin-anchored DIDs
-- `did:cheqd` — DIDs anchored per that method’s registered rules
+- `did:cheqd` - cheqd blockchain DIDs
 - `did:ethr` - Ethereum DIDs
 - Any W3C DID-compliant method
 
@@ -739,12 +739,11 @@ Complete SD-JWT:
 **v0.3.1-draft (April 29, 2026)**
 - Reframed Section 7 (H2A2A) as an open question — not part of v0.3, no normative content
 - Removed parentCredential `holder` field ambiguity — renamed to `subjectAgent`
-- Example JSON uses **did:example** anchors for illustrative status references (no testnet/network-specific revocation URLs); **`did:cheqd`** stays only where DID methods are named in prose
 
 **v0.3-draft (April 29, 2026)**
 - Removed all e-commerce-specific examples and terminology
 - Removed transport coupling (MCP references)
-- Removed DID method bias (single-network examples only)
+- Removed DID method bias (cheqd-only examples)
 - Added diverse use case examples (file access, API auth, service mgmt, resource ops)
 - Added DID method diversity (did:example, did:web, did:key, did:ion, did:cheqd)
 - Abstracted vocabulary (resource, action, service instead of product, purchase, merchant)
@@ -756,7 +755,7 @@ Complete SD-JWT:
 **v0.2 (Previous Draft)**
 - Initial draft with e-commerce focus
 - MCP transport coupling
-- Network-specific illustrative examples only
+- cheqd-specific examples
 
 ---
 

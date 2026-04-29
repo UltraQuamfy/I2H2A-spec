@@ -3,7 +3,7 @@
 ## 1. Overview
 
 This document defines a normative UCP-specific integration profile for using I2H2A SD-JWT+KB credentials in Universal Commerce Protocol (UCP) flows.
-It is an adaptation layer on top of the MCVI-aligned I2H2A core specification (**[I2H2A-v0.2-draft.md](../I2H2A-v0.2-draft.md)**). **[I2H2A-v0.3.1-draft.md](../I2H2A-v0.3.1-draft.md)** (**[prior v0.3 snapshot](../I2H2A-v0.3-draft.md)**) describes the broader transport-agnostic protocol narrative; requirement-level SD-JWT payloads for this profile remain as defined below and in **v0.2**.
+It is an adaptation layer on top of the MCVI-aligned I2H2A core specification (**[I2H2A-v0.2-draft.md](../I2H2A-v0.2-draft.md)**). **[I2H2A-v0.3.2-draft.md](../I2H2A-v0.3.2-draft.md)** (with lineage **[v0.3.1](../I2H2A-v0.3.1-draft.md)**, **[v0.3 snapshot](../I2H2A-v0.3-draft.md)**) describes the broader transport-agnostic protocol narrative; requirement-level SD-JWT payloads for this profile remain as defined below and in **v0.2**.
 
 I2H2A and UCP address different trust layers:
 
