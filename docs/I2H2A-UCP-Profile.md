@@ -27,7 +27,7 @@ This profile applies across UCP transports (REST, MCP, A2A, Embedded).
 
 ### 2.1 Required I2H2A fields for UCP use
 
-Implementations using this profile MUST require an I2H2A SD-JWT VC that conforms to I2H2A v0.2, including:
+Implementations using this profile MUST require an I2H2A SD-JWT VC that conforms to I2H2A v0.3, including:
 
 - `vct` = `https://i2h2a.org/credentials/I2H2A`
 - Issuer JWT `typ` = `dc+sd-jwt` for UCP profile conformance. During migration, verifiers SHOULD accept both `dc+sd-jwt` and legacy `vc+sd-jwt`.
@@ -50,7 +50,7 @@ Verifiers MUST enforce:
 
 ### 2.2 Scope mapping to UCP operations
 
-Core I2H2A v0.2 fields are `scope.mcpServers` and `scope.taskType` in the MCVI-aligned profile.
+Core I2H2A v0.3 fields are `scope.mcpServers` and `scope.taskType` in the MCVI-aligned profile.
 
 For UCP usage:
 
@@ -69,7 +69,7 @@ Generic I2H2A verifiers MUST NOT require `authorization` semantics beyond struct
 
 ### 2.4 Credential lifetime guidance
 
-I2H2A v0.2 requires temporal checks (`nbf`, `exp`).  
+I2H2A v0.3 requires temporal checks (`nbf`, `exp`).  
 For checkout-grade risk posture, issuers SHOULD use short validity windows appropriate for session-bound delegation and SHOULD minimize credential reuse windows.
 
 ---
@@ -302,7 +302,7 @@ I2H2A in this profile is strictly the human delegation proof layer used alongsid
 
 An implementation claiming conformance to this profile:
 
-- MUST use I2H2A v0.2 SD-JWT+KB semantics and field requirements
+- MUST use I2H2A v0.3 SD-JWT+KB semantics and field requirements
 - MUST carry I2H2A separately from OAuth bearer tokens
 - MUST enforce nonce and audience binding checks
 - MUST enforce scope and delegation constraints from disclosures
