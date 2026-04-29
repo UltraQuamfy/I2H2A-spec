@@ -1,8 +1,8 @@
-# I2H2A Specification v0.3.3 (Draft)
+# I2H2A Specification v0.3.4 (Draft)
 
 **Issuer-to-Holder-to-Agent (I2H2A) Delegation Protocol**
 
-**Version:** 0.3.3-draft  
+**Version:** 0.3.4-draft  
 **Date:** April 29, 2026  
 **Status:** Draft Specification
 
@@ -769,8 +769,10 @@ Complete SD-JWT:
 
 ## Document Change Log
 
+**v0.3.4-draft (April 29, 2026)**
+- Editorial: UTF-8 encoding sweep (13 replacement characters fixed); statusPurpose added to all BitstringStatusListEntry examples per [StatusList]; I2H2ADelegationCredential declared in contexts/v1.jsonld; MUST/SHOULD alignment in §3.3.0; §7.1 version label corrected to v0.3.x; §6.1 JSON comment removed; §5.2 Step 1 schema reference clarified to §3–§4
+
 **v0.3.3-draft (April 29, 2026)**
-- Editorial: UTF-8 encoding sweep; statusPurpose added to all BitstringStatusListEntry examples per [StatusList]; I2H2ADelegationCredential declared in contexts/v1.jsonld; MUST/SHOULD alignment in §3.3.0; §7.1 version label corrected to v0.3.x; §6.1 JSON comment removed; §5.2 Step 1 schema reference clarified
 - Editorial: canonical JSON-LD context IRI **`https://i2h2a.org/contexts/v1.jsonld`** (aligned with repository `contexts/v1.jsonld`); notes on Bitstring **`statusSize`**, VC Data Model §6.3 credential media types vs SD-JWT wire form, **`issuer`** object form, JWT **`iat`/`exp`** vs VC **`validFrom`/`validUntil`**, HTTPS **`statusListCredential`** in §4.2
 - §1.3 design goal #4 reframed as Auditability; §1.1 problem bullet aligned; §7 remains open placeholder for any future H2A2A work
 - v0.3-draft change-log bullets neutralized (no vendor brands or personal names)

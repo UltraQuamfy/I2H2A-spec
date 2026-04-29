@@ -4,6 +4,10 @@
     "@protected": true,
     "I2H2A": "https://i2h2a.org/vocab#I2H2A",
     "HumanIdentityCredential": "https://i2h2a.org/vocab#HumanIdentityCredential",
+    "I2H2ADelegationCredential": {
+      "@id": "https://i2h2a.org/vocab#I2H2ADelegationCredential",
+      "@type": "@id"
+    },
     "delegatedBy": "https://i2h2a.org/vocab#delegatedBy",
     "parentCredential": "https://i2h2a.org/vocab#parentCredential",
     "delegationDepth": "https://i2h2a.org/vocab#delegationDepth",
