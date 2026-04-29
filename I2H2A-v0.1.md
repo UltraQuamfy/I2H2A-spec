@@ -1,4 +1,4 @@
-> **Archived — superseded by I2H2A v0.2.** This document is retained for historical reference only. Do not implement.
+> **Archived — superseded by subsequent I2H2A drafts.** Prefer **[I2H2A-v0.3-draft.md](./I2H2A-v0.3-draft.md)** for the current protocol narrative; **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** defines the interoperable SD-JWT VC byte profile. Retained for historical reference only — do not implement.
 # I2H2A Specification v0.1
 
 ## Issuer to Holder to Agent Delegation Credential
@@ -7,7 +7,7 @@
 **Status:** Draft  
 **Date:** 2026-04-12
 
-> **⚠ Superseded.** This is I2H2A v0.1 — retained for reference only. The current normative specification is [I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md), which migrates to SD-JWT VC (RFC 9901), ES256/P-256, and adds a normative field visibility map. Do not implement v0.1 for new deployments.
+> **⚠ Superseded.** This is I2H2A v0.1 — retained for reference only. Use **[I2H2A-v0.3-draft.md](./I2H2A-v0.3-draft.md)** for current protocol drafting; use **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** for the SD-JWT VC (RFC 9901), ES256/P-256, and field visibility map aligned with tooling and **`@i2h2a/verification-sdk`**. Do not implement v0.1 for new deployments.
 
 ---
 

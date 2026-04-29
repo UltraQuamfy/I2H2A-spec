@@ -6,15 +6,19 @@ I2H2A defines a standard credential type so a verified human holder can cryptogr
 
 Implementers who issue or verify delegated agent access — wallet vendors, identity providers, MCP server operators, and standards bodies — should adopt it to enable a common verification and interoperability story across ecosystems.
 
-## Current version
+## Current versions
 
-The normative specification is **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** — SD-JWT VC, ES256/P-256, field visibility map.
+The latest specification draft is **[I2H2A-v0.3-draft.md](./I2H2A-v0.3-draft.md)** — protocol overview (transport‑, DID‑, and domain‑agnostic delegation), credential semantics, VP/KB‑JWT flows, Bitstring revocation, and H2A2A delegation chains.
 
-Previous version: [I2H2A-v0.1.md](./I2H2A-v0.1.md) — superseded. SD-JWT VC, ES256/P-256. Retained for reference only.
+The **concrete SD‑JWT VC profile** used by **`examples/`**, the JSON‑LD context, the **[UCP integration profile](./docs/I2H2A-UCP-Profile.md)**, and the reference **[`@i2h2a/verification-sdk`](https://github.com/i2h2a-org/I2H2A-middleware)** verifier remains **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** (MCVI‑aligned byte layout, field visibility map, unchanged).
+
+Historical: **[I2H2A-v0.1.md](./I2H2A-v0.1.md)** — superseded; retained for reference only.
 
 ## Format
 
-I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-256** signatures throughout. Selective disclosure allows verifiers to receive only the minimum claims required — delegation scope, task type, delegated-by — without exposing the full authorization payload.
+**v0.3 draft** describes delegation at the VC / protocol layer (including SD‑JWT and KB‑JWT requirements in prose).
+
+**v0.2 draft** codifies interoperable payloads: **SD‑JWT VC** (RFC 9901) with **ES256/P‑256**, `vct` `https://i2h2a.org/credentials/I2H2A`, selective disclosure, and KB‑JWT holder binding to `cnf.jwk` — the shape the middleware validates today.
 
 ## Key properties
 
@@ -24,7 +28,7 @@ I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-2
 - **Agent DID:** SHOULD use `did:key` for ephemeral sessions; MAY use any DID method
 - **Holder binding:** KB-JWT signed by agent P-256 key (`cnf.jwk`)
 - **Revocation:** Bitstring Status List (HTTPS-resolvable)
-- **VP mechanics:** SD-JWT+KB presented at MCP session initiation via OID4VP
+- **VP mechanics:** SD‑JWT+KB presentations (v0.2 deployments commonly use OID4VP; MCP is one optional transport among many)
 
 ## Chain models
 
