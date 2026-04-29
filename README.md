@@ -8,13 +8,13 @@ Implementers who issue or verify delegated agent access — wallet vendors, iden
 
 ## Current version
 
-The normative specification is **[I2H2A-v0.3-draft.md](./I2H2A-v0.3-draft.md)** — SD-JWT VC, ES256/P-256, field visibility map.
+The normative specification is **[I2H2A-v0.2-draft.md](./I2H2A-v0.2-draft.md)** — SD-JWT VC, ES256/P-256, field visibility map.
 
 Previous version: [I2H2A-v0.1.md](./I2H2A-v0.1.md) — superseded. SD-JWT VC, ES256/P-256. Retained for reference only.
 
 ## Format
 
-I2H2A v0.3 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-256** signatures throughout. Selective disclosure allows verifiers to receive only the minimum claims required — delegation scope, task type, delegated-by — without exposing the full authorization payload.
+I2H2A v0.2 credentials are encoded as **SD-JWT VCs** (RFC 9901) with **ES256/P-256** signatures throughout. Selective disclosure allows verifiers to receive only the minimum claims required — delegation scope, task type, delegated-by — without exposing the full authorization payload.
 
 ## Key properties
 

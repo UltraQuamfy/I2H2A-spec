@@ -1,22 +1,16 @@
 ---
 
-# I2H2A Specification v0.3
+# I2H2A Specification v0.2
 
 ## Issuer to Holder to Agent Delegation Credential
 
-**Version:** 0.3
+**Version:** 0.2
 **Status:** Draft — not for publication
-**Date:** 2026-04-25
+**Date:** 2026-04-17
 
 ---
 
 ## Changelog
-
-### v0.2 → v0.3 Draft
-
-| # | Change | Section(s) affected |
-|---|--------|-------------------|
-| 1 | Draft iteration; specification version and artifact filename alignment | document |
 
 ### v0.1 → v0.2 Draft
 
@@ -474,7 +468,7 @@ I2H2A MAY be issued by any platform capable of producing RFC 9901-conformant SD-
 
 #### 7.3 Mastercard Verifiable Intent alignment
 
-I2H2A v0.3 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorithm and format profile. Future V2 implementations MAY present both an I2H2A delegation credential and an MC VI payment credential in a single W3C VP to an MCP server, enabling cryptographically verified delegation and payment intent in one presentation.
+I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorithm and format profile. Future V2 implementations MAY present both an I2H2A delegation credential and an MC VI payment credential in a single W3C VP to an MCP server, enabling cryptographically verified delegation and payment intent in one presentation.
 
 #### 7.4 MCP integration
 
@@ -503,7 +497,7 @@ I2H2A v0.3 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 
 #### 9.1 did:example with P-256 / JsonWebKey2020 (illustrative) — Example issuer DID: did:example:issuer
 
-**DID document excerpt (v0.3 — JsonWebKey2020, P-256):**
+**DID document excerpt (v0.2 — JsonWebKey2020, P-256):**
 ```json
 {
   "id": "did:example:issuer",
@@ -557,4 +551,4 @@ I2H2A v0.3 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 
 ---
 
-*End of I2H2A Specification v0.3 Draft*
+*End of I2H2A Specification v0.2 Draft*

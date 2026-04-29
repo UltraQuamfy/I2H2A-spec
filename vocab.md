@@ -110,4 +110,4 @@ These terms are defined by RFC 9901 and used in I2H2A credentials. They are not 
 
 ## Algorithm
 
-I2H2A v0.3 mandates **ES256 / P-256** for all signatures (issuer JWT, KB-JWT). EdDSA (v0.1) is superseded by ES256/P-256 in current drafts.
+I2H2A v0.2 mandates **ES256 / P-256** for all signatures (issuer JWT, KB-JWT). ES256/P-256 was used in v0.1 and is superseded.
