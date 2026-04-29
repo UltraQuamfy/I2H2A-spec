@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>I2H2A</title>
+  <link rel="icon" type="image/png" href="./assets/logo-square.png">
+  <style>
+    :root {
+      --text: #1f2933;
+      --muted: #5f6b76;
+      --link: #2a5a8c;
+      --bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 24px 36px;
+    }
+    .logo {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      margin: 10px 0 18px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+    p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    ul {
+      margin: 0 0 24px;
+      padding-left: 20px;
+    }
+    li { margin: 8px 0; }
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+    a:hover,
+    a:focus { text-decoration: underline; }
+    .footer {
+      margin-top: 26px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <img class="logo" src="./assets/logo-banner.png" alt="I2H2A logo banner">
+    <h1>I2H2A</h1>
+    <p>Open specification for human-to-agent delegation using Verifiable Credentials.</p>
+
+    <ul>
+      <li><a href="./I2H2A-v0.3.4-draft.md">Specification — v0.3.4 draft</a></li>
+      <li><a href="./I2H2A-v0.3.3-draft.md">Specification — v0.3.3 draft</a> (prior snapshot)</li>
+      <li><a href="./docs/I2H2A-UCP-Profile.md">UCP Integration Profile</a></li>
+      <li><a href="https://github.com/i2h2a-org/I2H2A-spec">GitHub repo</a></li>
+      <li><a href="https://github.com/i2h2a-org/I2H2A-middleware">Middleware / SDK</a></li>
+    </ul>
+
+    <div class="footer">MIT License · Contact: hello@i2h2a.org</div>
+  </main>
+</body>
+</html>
