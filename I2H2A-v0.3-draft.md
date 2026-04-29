@@ -198,7 +198,7 @@ URL of the status list credential containing revocation bits.
 Index position of this credential's status bit in the list.
 
 Status list MAY be deployed on:
-- Blockchain ledgers (cheqd, Ethereum, etc.)
+- Public blockchains or other distributed anchors (implementations MUST follow **[StatusList]** and applicable security practices for the deployment)
 - IPFS or similar content-addressed storage
 - Centralized registries with cryptographic integrity
 
@@ -273,10 +273,10 @@ Reference to parent credential in H2A2A delegation chains (see Section 7).
     }
   },
   "credentialStatus": {
-    "id": "did:cheqd:testnet:status-list#67890",
+    "id": "did:example:global-status-registry#67890",
     "type": "BitstringStatusListEntry",
     "statusListIndex": "67890",
-    "statusListCredential": "did:cheqd:testnet:status-list"
+    "statusListCredential": "did:example:global-status-registry"
   }
 }
 ```
@@ -588,7 +588,7 @@ I2H2A credentials MUST work with any DID method:
 - `did:web` - Web-based DIDs
 - `did:key` - Cryptographic key DIDs
 - `did:ion` - Bitcoin-anchored DIDs
-- `did:cheqd` - cheqd blockchain DIDs
+- `did:cheqd` — DIDs anchored per that method’s registered rules
 - `did:ethr` - Ethereum DIDs
 - Any W3C DID-compliant method
 
@@ -783,7 +783,7 @@ Complete SD-JWT:
 **v0.3-draft (April 29, 2026)**
 - Removed all e-commerce-specific examples and terminology
 - Removed transport coupling (MCP references)
-- Removed DID method bias (cheqd-only examples)
+- Removed DID method bias (single-network examples only)
 - Added diverse use case examples (file access, API auth, service mgmt, resource ops)
 - Added DID method diversity (did:example, did:web, did:key, did:ion, did:cheqd)
 - Abstracted vocabulary (resource, action, service instead of product, purchase, merchant)
@@ -795,7 +795,7 @@ Complete SD-JWT:
 **v0.2 (Previous Draft)**
 - Initial draft with e-commerce focus
 - MCP transport coupling
-- cheqd-specific examples
+- Network-specific illustrative examples only
 
 ---
 

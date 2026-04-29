@@ -547,7 +547,7 @@ I2H2A v0.2 uses ES256/P-256 and SD-JWT VC throughout, matching the MC VI algorit
 - W3C Status List 2021
 - RFC 8032: EdDSA — superseded in this spec by ES256
 - Mastercard Verifiable Intent specification (verifiableintent.dev)
-- cheqd Trust Registry documentation
+- Credential status and trust-registry deployment patterns (informative implementations vary per ecosystem)
 
 ---
 
